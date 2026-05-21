@@ -1,25 +1,13 @@
-#Tela
-WIDTH = 1440
-HEIGHT = 750
+# Tela
+WIDTH = 1200
+HEIGHT = 700
 FPS = 60
 
-game = True
+# Barbie
+BARBIE_SPEED = 7
 
-start_x = (WIDTH/2)-75
-start_y = (HEIGHT/2)-50
-size = 0.1 
-speed = 8
-barbieX = 10
-barbieY = -15
+# Itens
+ITEM_SPEED = 5
 
-
-puxasacolaconta = 1
-puxasacolascale = 1
-puxasacolaspeed = 40
-vidapuxasacola = 10000
-
-sacolaspeed = 2
-sacolascale = 0.35
-sacolapontos = 100
-
-pontos = 5000
+# Pontuação
+BAG_POINTS = 100
