@@ -74,4 +74,4 @@ class Coffee(pygame.sprite.Sprite):
 
     def update(self):
         self.move()
-        
+
