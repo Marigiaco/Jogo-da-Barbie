@@ -1,7 +1,7 @@
 import pygame
 import random
 
-from parametros import *
+from indices import *
 
 pygame.init()
 
@@ -49,7 +49,7 @@ class Barbie(pygame.sprite.Sprite):
 
     def update(self):
         self.move()
-        
+
 
 class Coffee(pygame.sprite.Sprite):
 
