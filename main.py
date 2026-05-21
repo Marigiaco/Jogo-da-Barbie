@@ -75,3 +75,84 @@ class Coffee(pygame.sprite.Sprite):
     def update(self):
         self.move()
 
+        
+
+
+class Bag(pygame.sprite.Sprite):
+
+    def _init_(self):
+        super()._init_()
+
+        self.image = pygame.transform.scale(bag_img, (70, 70))
+
+        self.rect = self.image.get_rect()
+
+        self.rect.x = random.randint(50, WIDTH-50)
+        self.rect.y = -100
+
+        self.speed = ITEM_SPEED
+
+    def move(self):
+
+        self.rect.y += self.speed
+
+        if self.rect.top > HEIGHT:
+            self.kill()
+
+    def update(self):
+        self.move()
+    
+all_sprites = pygame.sprite.Group()
+
+bags = pygame.sprite.Group()
+
+obstacles = pygame.sprite.Group()
+
+barbie = Barbie()
+
+all_sprites.add(barbie)
+
+
+if random.randint(1, 50) == 1:
+
+    bag = Bag()
+
+    all_sprites.add(bag)
+    bags.add(bag)
+
+if random.randint(1, 80) == 1:
+
+    coffee = Coffee()
+
+    all_sprites.add(coffee)
+    obstacles.add(coffee)
+
+collected = pygame.sprite.spritecollide(barbie, bags, True)
+
+score += len(collected) * BAG_POINTS
+
+if pygame.sprite.spritecollide(barbie, obstacles, False):
+
+    running = False
+
+running = True
+
+score = 0
+
+while running:
+
+    for event in pygame.event.get():
+
+        if event.type == pygame.QUIT:
+            running = False
+
+    all_sprites.update()
+
+    window.blit(background, (0,0))
+
+    all_sprites.draw(window)
+
+    pygame.display.update()
+
+    clock.tick(FPS)
+    
