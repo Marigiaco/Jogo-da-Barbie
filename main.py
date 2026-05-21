@@ -75,3 +75,28 @@ class Coffee(pygame.sprite.Sprite):
     def update(self):
         self.move()
         
+
+
+class Bag(pygame.sprite.Sprite):
+
+    def _init_(self):
+        super()._init_()
+
+        self.image = pygame.transform.scale(bag_img, (70, 70))
+
+        self.rect = self.image.get_rect()
+
+        self.rect.x = random.randint(50, WIDTH-50)
+        self.rect.y = -100
+
+        self.speed = ITEM_SPEED
+
+    def move(self):
+
+        self.rect.y += self.speed
+
+        if self.rect.top > HEIGHT:
+            self.kill()
+
+    def update(self):
+        self.move()
