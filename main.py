@@ -49,4 +49,5 @@ class Barbie(pygame.sprite.Sprite):
 
     def update(self):
         self.move()
+        
 
