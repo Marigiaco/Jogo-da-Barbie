@@ -156,3 +156,10 @@ while running:
 
     clock.tick(FPS)
     
+
+
+font = pygame.font.Font(None, 50)
+
+score_text = font.render(f"Pontos: {score}", True, (255,255,255))
+
+window.blit(score_text, (20,20))
