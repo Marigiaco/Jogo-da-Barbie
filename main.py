@@ -1,36 +1,52 @@
 import pygame
-import math
-from indices import *
-from sys import exit
 import random
-import json
-import os
+
+from parametros import *
 
 pygame.init()
 
 window = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption(‘Barbie shopping’)
+pygame.display.set_caption("Barbie Shopping Rush")
+
 clock = pygame.time.Clock()
 
-background = pygame.image.load(r'jogo\imagensons\image\background0.png').convert_alpha()
+background = pygame.image.load("assets/images/background.png")
 background = pygame.transform.scale(background, (WIDTH, HEIGHT))
-game_over_image = pygame.image.load(r'jogo\imagensons\image\game_over.png').convert_alpha()
-game_over_image = pygame.transform.scale(game_over_image, (WIDTH, HEIGHT))
-start_screen_image = pygame.image.load(r'jogo\imagensons\image\inicio.png').convert_alpha()
-start_screen_image = pygame.transform.scale(start_screen_image, (WIDTH, HEIGHT))
-start_button_image = pygame.image.load(r'jogo\imagensons\image\Start.png').convert_alpha()
-start_button_image = pygame.transform.scale(start_button_image, (200, 100))
-character_select_button_image = pygame.image.load(r'jogo\imagensons\image\character_select.png').convert_alpha()
-character_select_button_image = pygame.transform.rotozoom(character_select_button_image, 0, 1.2)
-character_select_button_image = pygame.transform.scale(character_select_button_image, (200, 100))
-ranking_button_image = pygame.image.load(r'jogo\imagensons\image\ranking.png').convert_alpha()
-ranking_button_image = pygame.transform.scale(ranking_button_image, (200, 100))
 
-pygame.mixer.music.load(r'jogo\imagensons\sound\apocalypse.mp3')  
-pygame.mixer.music.set_volume(0.8)
-game_over_music = pygame.mixer.Sound(r'ogo\imagensons\sound\go_effect.mp3') 
-game_over_music.set_volume(0.5)
-shoot_sound = pygame.mixer.Sound(r'ogo\imagensons/sound\shot.mp3')
-shoot_sound.set_volume(0.1)
-music_loaded = True
+barbie_img = pygame.image.load("assets/images/barbie.png")
+bag_img = pygame.image.load("assets/images/bag.png")
+coffee_img = pygame.image.load("assets/images/coffee.png")
+
+
+class Barbie(pygame.sprite.Sprite):
+
+    def __init__(self):
+        super().__init__()
+
+        self.image = pygame.transform.scale(barbie_img, (120, 120))
+
+        self.rect = self.image.get_rect()
+
+        self.rect.center = (WIDTH//2, HEIGHT-100)
+
+        self.speed = BARBIE_SPEED
+
+    def move(self):
+
+        keys = pygame.key.get_pressed()
+
+        if keys[pygame.K_a]:
+            self.rect.x -= self.speed
+
+        if keys[pygame.K_d]:
+            self.rect.x += self.speed
+
+        if self.rect.left < 0:
+            self.rect.left = 0
+
+        if self.rect.right > WIDTH:
+            self.rect.right = WIDTH
+
+    def update(self):
+        self.move()
 
