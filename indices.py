@@ -1,6 +1,6 @@
 # Tela
-WIDTH = 1200
-HEIGHT = 700
+WIDTH = 1000
+HEIGHT = 800
 FPS = 60
 
 # Barbie

@@ -111,7 +111,8 @@ obstacles = pygame.sprite.Group()
 barbie = Barbie()
 
 all_sprites.add(barbie)
-
+ 
+score = 0
 
 if random.randint(1, 50) == 1:
 
@@ -155,4 +156,5 @@ while running:
     pygame.display.update()
 
     clock.tick(FPS)
+    
     
