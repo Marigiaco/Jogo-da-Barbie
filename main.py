@@ -551,4 +551,5 @@ def tela_game_over(score, nome):
 def spawn_itens(grupo, quantidade):
     for _ in range(quantidade):
         grupo.add(Item())
-        
+def colisao_circulos(a, b, ra, rb):
+    return a.distance_to(b) < (ra + rb)   
