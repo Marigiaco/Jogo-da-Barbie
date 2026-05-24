@@ -1,6 +1,6 @@
 
 # --- Tela ---
-WIDTH = 1280
+WIDTH = 1000
 HEIGHT = 720
 FPS = 60
 

@@ -9,7 +9,7 @@ from indices import *
 pygame.init()
 
 window = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption('🎀 Barbie Shopping Spree 🎀')
+pygame.display.set_caption('Barbie Shopping Rush')
 clock = pygame.time.Clock()
 ASSETS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'assets', 'images')
 
@@ -32,16 +32,12 @@ font_med = pygame.font.SysFont('Arial', 36, bold=True)
 font_big = pygame.font.SysFont('Arial', 64, bold=True)
 font_huge = pygame.font.SysFont('Arial', 96, bold=True)
 BG_IMAGE = carregar_imagem('background.png', (WIDTH, HEIGHT))
-BARBIE_IMAGE = carregar_imagem('barbie.png', (80, 100))
+BARBIE_IMAGE = carregar_imagem('barbie.png', (70, 160))
 DISASTER_IMAGE = carregar_imagem('cloud.png', (80, 60))
 
 def desenhar_cenario(surface):
     surface.blit(BG_IMAGE, (0, 0))
 
-def desenhar_brilho(surface, x, y, tamanho, cor):
-    pygame.draw.line(surface, cor, (x - tamanho, y), (x + tamanho, y), 2)
-    pygame.draw.line(surface, cor, (x, y - tamanho), (x, y + tamanho), 2)
-    pygame.draw.circle(surface, cor, (x, y), 2)
 
 class Barbie(pygame.sprite.Sprite):
     def __init__(self):
@@ -75,9 +71,8 @@ class Barbie(pygame.sprite.Sprite):
         if self.invincible_timer > 0 and (self.invincible_timer // 5) % 2 == 0:
             return
 
-        rect = self.image.get_rect(center=(int(self.pos.x), int(self.pos.y)))
-        surface.blit(self.image, rect)
-        self.rect = rect  
+        self.rect.center = (int(self.pos.x), int(self.pos.y))
+        surface.blit(self.image, self.rect) 
 
         x, y = int(self.pos.x), int(self.pos.y)
         if self.is_immune:
@@ -206,7 +201,6 @@ class FashionDisaster(pygame.sprite.Sprite):
         self.radius = DISASTER_RADIUS
         self.speed = DISASTER_SPEED + random.uniform(0, 0.8)
         self.fase = random.uniform(0, 2 * math.pi)
-        # >>> essas duas linhas precisam estar AQUI DENTRO do __init__ <
         self.image = DISASTER_IMAGE
         self.rect = self.image.get_rect(center=self.pos)
     def desenhar(self, surface):
@@ -416,7 +410,6 @@ def tela_inicio():
         pygame.display.update()
         clock.tick(FPS)
 def tela_nome():
-    """Pede o nome da jogadora. Retorna (estado, nome)."""
     nome = ""
     input_rect = pygame.Rect(WIDTH // 2 - 200, HEIGHT // 2, 400, 60)
     btn_ok = pygame.Rect(WIDTH // 2 - 100, HEIGHT // 2 + 90, 200, 60)
@@ -467,7 +460,6 @@ def tela_ranking():
         desenhar_cenario(window)
         titulo = font_big.render("Top 10 Fashionistas", True, DARK_PINK)
         window.blit(titulo, (WIDTH // 2 - titulo.get_width() // 2, 60))
-
         ranking = carregar_ranking()
         if not ranking:
             msg = font_med.render("Nenhuma pontuação ainda. Seja a primeira!", True, DARK_PINK)
@@ -476,13 +468,11 @@ def tela_ranking():
             for i, r in enumerate(ranking[:10]):
                 linha = font_med.render(f"{i + 1}. {r['nome']}  -  {r['score']}", True, DARK_PINK)
                 window.blit(linha, (WIDTH // 2 - 200, 150 + i * 40))
-
         pygame.draw.rect(window, HOT_PINK, btn_back, border_radius=12)
         pygame.draw.rect(window, WHITE, btn_back, 3, border_radius=12)
         bt = font_small.render("VOLTAR", True, WHITE)
         window.blit(bt, (btn_back.centerx - bt.get_width() // 2,
                          btn_back.centery - bt.get_height() // 2))
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -651,5 +641,5 @@ def main():
             estado = tela_ranking()
 
 
-if name == 'main':
+if __name__ == '__main__':
     main()
