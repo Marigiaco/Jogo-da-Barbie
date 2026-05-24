@@ -1,4 +1,4 @@
-Barbie Shopping Spree - Jogo Principal
+# Barbie Shopping Spree - Jogo Principal
 
 import pygame
 import math
@@ -252,3 +252,18 @@ def carregar_ranking():
             return json.load(f)
     except (json.JSONDecodeError, OSError):
         return []
+
+def salvar_ranking(ranking):
+    try:
+        with open(RANKING_FILE, 'w') as f:
+            json.dump(ranking, f, indent=2)
+    except OSError:
+        pass
+
+def adicionar_ao_ranking(nome, score):
+    ranking = carregar_ranking()
+    ranking.append({'nome': nome, 'score': score})
+    ranking.sort(key=lambda r: r['score'], reverse=True)
+    ranking = ranking[:10]
+    salvar_ranking(ranking)
+    return ranking
