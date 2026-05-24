@@ -552,4 +552,80 @@ def spawn_itens(grupo, quantidade):
     for _ in range(quantidade):
         grupo.add(Item())
 def colisao_circulos(a, b, ra, rb):
-    return a.distance_to(b) < (ra + rb)   
+    return a.distance_to(b) < (ra + rb)
+def rodar_partida(nome_jogador):
+   
+    barbie = Barbie()
+    barbie_ref[0] = barbie
+
+    itens = pygame.sprite.Group()
+    disasters = pygame.sprite.Group()
+    powerups = pygame.sprite.Group()
+    score = 0
+    wave = 1
+    spawn_itens(itens, BASE_ITEMS_PER_WAVE)
+    spawn_disasters(disasters, BASE_DISASTERS_PER_WAVE)
+    ultimo_powerup_spawn = pygame.time.get_ticks()
+
+    morte_em = None
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                return score
+
+        desenhar_cenario(window)
+
+        agora = pygame.time.get_ticks()
+        if (agora - ultimo_powerup_spawn > POWERUP_SPAWN_INTERVAL
+                and len(powerups) == 0 and barbie.alive):
+            ultimo_powerup_spawn = agora
+            powerups.add(PowerUp())
+
+        itens.update()
+        for item in itens:
+            item.desenhar(window)
+            if barbie.alive and colisao_circulos(item.pos, barbie.pos, item.radius, barbie.radius):
+                score += SCORE_POR_TIPO[item.tipo]
+                item.kill()
+
+        disasters.update()
+        for d in disasters:
+            d.desenhar(window)
+            if barbie.alive and colisao_circulos(d.pos, barbie.pos, d.radius, barbie.radius):
+                barbie.levar_dano()
+
+        powerups.update()
+        for p in powerups:
+            p.desenhar(window)
+            if barbie.alive and colisao_circulos(p.pos, barbie.pos, p.radius, barbie.radius):
+                if p.tipo == 'sparkle':
+                    for d in list(disasters):
+                        d.kill()
+                else:
+                    barbie.ativar_powerup(p.tipo)
+                p.kill()
+
+        barbie.update()
+        barbie.desenhar(window)
+        desenhar_hud(window, barbie, score, wave)
+
+        nome_txt = font_small.render(f"Jogadora: {nome_jogador}", True, DARK_PINK)
+        window.blit(nome_txt, (20, HEIGHT - 60))
+
+        if len(itens) == 0 and barbie.alive:
+            wave += 1
+            spawn_itens(itens, BASE_ITEMS_PER_WAVE + wave * 2)
+            spawn_disasters(disasters, BASE_DISASTERS_PER_WAVE + wave)
+
+        if not barbie.alive:
+            if morte_em is None:
+                morte_em = pygame.time.get_ticks()
+            elif pygame.time.get_ticks() - morte_em > 1200:
+                return score
+
+        pygame.display.update()
+        clock.tick(FPS)
