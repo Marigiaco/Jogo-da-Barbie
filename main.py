@@ -75,3 +75,134 @@ class Barbie(pygame.sprite.Sprite):
         # "rect" para colisões (usado pelo sprite group)
         self.image = pygame.Surface((self.radius * 2, self.radius * 3), pygame.SRCALPHA)
         self.rect = self.image.get_rect(center=self.pos)
+     def desenhar(self, surface):
+        if not self.alive:
+            return
+
+        # Pisca quando invencível
+        if self.invincible_timer > 0 and (self.invincible_timer // 5) % 2 == 0:
+            return
+
+        x, y = int(self.pos.x), int(self.pos.y)
+
+        # Vestido (triângulo rosa)
+        pygame.draw.polygon(surface, HOT_PINK, [
+            (x, y + 8),
+            (x - 30, y + 40),
+            (x + 30, y + 40)
+        ])
+        # Detalhe do vestido (cinturinha)
+        pygame.draw.rect(surface, DARK_PINK, (x - 14, y + 6, 28, 6))
+
+        # Pescoço
+        pygame.draw.rect(surface, (255, 220, 190), (x - 4, y - 6, 8, 12))
+
+        # Cabelo (loiro, atrás da cabeça)
+        pygame.draw.circle(surface, GOLD, (x, y - 18), 22)
+        pygame.draw.rect(surface, GOLD, (x - 22, y - 18, 44, 32))
+
+        # Rosto
+        pygame.draw.circle(surface, (255, 220, 190), (x, y - 18), 16)
+
+        # Olhos
+        pygame.draw.circle(surface, BLACK, (x - 6, y - 20), 2)
+        pygame.draw.circle(surface, BLACK, (x + 6, y - 20), 2)
+        # Sorriso
+        pygame.draw.arc(surface, DARK_PINK,
+                        (x - 5, y - 16, 10, 8), math.pi, 2 * math.pi, 2)
+
+        # Coroinha
+        pygame.draw.polygon(surface, GOLD, [
+            (x - 10, y - 32), (x - 6, y - 38),
+            (x - 2, y - 33), (x + 2, y - 38),
+            (x + 6, y - 33), (x + 10, y - 38),
+            (x + 10, y - 30), (x - 10, y - 30)
+        ])
+
+        # Brilho de imunidade
+        if self.is_immune:
+            pygame.draw.circle(surface, MINT, (x, y + 10), 45, 3)
+
+        # Aura de velocidade
+        if self.speed_boost_active:
+            pygame.draw.circle(surface, GOLD, (x, y + 10), 50, 2)
+
+        # Atualiza rect pra colisões
+        self.rect.center = (x, y + 10)
+
+    # ------ Input ------
+    def processar_input(self):
+        if not self.alive:
+            return
+
+        keys = pygame.key.get_pressed()
+        dx = dy = 0
+        if keys[pygame.K_w] or keys[pygame.K_UP]:
+            dy = -1
+        if keys[pygame.K_s] or keys[pygame.K_DOWN]:
+            dy = 1
+        if keys[pygame.K_a] or keys[pygame.K_LEFT]:
+            dx = -1
+        if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
+            dx = 1
+
+        # Normalizar diagonal pra não andar mais rápido
+        if dx != 0 and dy != 0:
+            dx *= 0.7071
+            dy *= 0.7071
+
+        self.pos.x += dx * self.speed
+        self.pos.y += dy * self.speed
+
+        # Limites da tela
+        self.pos.x = max(self.radius, min(self.pos.x, WIDTH - self.radius))
+        self.pos.y = max(self.radius + 20, min(self.pos.y, HEIGHT - self.radius - 20))
+
+    # ------ Dano ------
+    def levar_dano(self, percent=DISASTER_DAMAGE):
+        if self.invincible_timer > 0 or not self.alive or self.is_immune:
+            return
+        self.current_health -= self.max_health * percent
+        self.invincible_timer = INVINCIBLE_FRAMES
+        if self.current_health <= 0:
+            if self.extra_lives > 0:
+                self.extra_lives -= 1
+                self.current_health = self.max_health
+            else:
+                self.current_health = 0
+                self.alive = False
+
+    # ------ Power-ups ------
+    def ativar_powerup(self, tipo):
+        agora = pygame.time.get_ticks()
+        if tipo == 'health':
+            self.current_health = self.max_health
+        elif tipo == 'immunity':
+            self.is_immune = True
+            self.immune_until = agora + POWERUP_DURATION
+        elif tipo == 'speed':
+            self.speed = self.original_speed * 1.7
+            self.speed_boost_active = True
+            self.speed_boost_until = agora + POWERUP_DURATION
+        elif tipo == 'magnet':
+            self.magnet_active = True
+            self.magnet_until = agora + POWERUP_DURATION
+        elif tipo == 'extra_life':
+            if self.extra_lives < self.max_extra_lives:
+                self.extra_lives += 1
+
+    # ------ Atualização por frame ------
+    def update(self):
+        if not self.alive:
+            return
+        self.processar_input()
+        agora = pygame.time.get_ticks()
+        if self.is_immune and agora > self.immune_until:
+            self.is_immune = False
+        if self.speed_boost_active and agora > self.speed_boost_until:
+            self.speed_boost_active = False
+            self.speed = self.original_speed
+        if self.magnet_active and agora > self.magnet_until:
+            self.magnet_active = False
+        if self.invincible_timer > 0:
+            self.invincible_timer -= 1
