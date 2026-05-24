@@ -457,3 +457,40 @@ def tela_nome():
 
         pygame.display.update()
         clock.tick(FPS)
+
+
+
+
+def tela_ranking():
+    btn_back = pygame.Rect(WIDTH // 2 - 100, HEIGHT - 80, 200, 50)
+    while True:
+        desenhar_cenario(window)
+        titulo = font_big.render("Top 10 Fashionistas", True, DARK_PINK)
+        window.blit(titulo, (WIDTH // 2 - titulo.get_width() // 2, 60))
+
+        ranking = carregar_ranking()
+        if not ranking:
+            msg = font_med.render("Nenhuma pontuação ainda. Seja a primeira!", True, DARK_PINK)
+            window.blit(msg, (WIDTH // 2 - msg.get_width() // 2, HEIGHT // 2))
+        else:
+            for i, r in enumerate(ranking[:10]):
+                linha = font_med.render(f"{i + 1}. {r['nome']}  -  {r['score']}", True, DARK_PINK)
+                window.blit(linha, (WIDTH // 2 - 200, 150 + i * 40))
+
+        pygame.draw.rect(window, HOT_PINK, btn_back, border_radius=12)
+        pygame.draw.rect(window, WHITE, btn_back, 3, border_radius=12)
+        bt = font_small.render("VOLTAR", True, WHITE)
+        window.blit(bt, (btn_back.centerx - bt.get_width() // 2,
+                         btn_back.centery - bt.get_height() // 2))
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                return START_SCREEN
+            if event.type == pygame.MOUSEBUTTONDOWN and btn_back.collidepoint(event.pos):
+                return START_SCREEN
+
+        pygame.display.update()
+        clock.tick(FPS)
