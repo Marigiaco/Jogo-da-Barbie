@@ -1,5 +1,3 @@
-# Barbie Shopping Spree - Jogo Principal
-
 import pygame
 import math
 import random
@@ -13,42 +11,39 @@ pygame.init()
 window = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('🎀 Barbie Shopping Spree 🎀')
 clock = pygame.time.Clock()
+ASSETS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'assets', 'images')
 
+def carregar_imagem(nome_arquivo, tamanho=None):
+    """Carrega uma imagem da pasta assets/images/."""
+    caminho = os.path.join(ASSETS_DIR, nome_arquivo)
+    img = pygame.image.load(caminho).convert_alpha()
+    if tamanho is not None:
+        img = pygame.transform.scale(img, tamanho)
+    return img
+ITEM_IMAGES = {
+    'bag':      carregar_imagem('bag.png',      (40, 40)),
+    'lipstick': carregar_imagem('batom.png', (40, 40)),
+    'shoe':     carregar_imagem('shoe.png',     (40, 40)),
+    'jewel':    carregar_imagem('jewel.png',    (40, 40)),
+    'crown':    carregar_imagem('crown.png',    (40, 40)),
+}
 font_small = pygame.font.SysFont('Arial', 24, bold=True)
 font_med = pygame.font.SysFont('Arial', 36, bold=True)
 font_big = pygame.font.SysFont('Arial', 64, bold=True)
 font_huge = pygame.font.SysFont('Arial', 96, bold=True)
-
+BG_IMAGE = carregar_imagem('background.png', (WIDTH, HEIGHT))
+BARBIE_IMAGE = carregar_imagem('barbie.png', (80, 100))
+DISASTER_IMAGE = carregar_imagem('cloud.png', (80, 60))
 
 def desenhar_cenario(surface):
-    """Desenha um fundo rosa com 'passarela' e estrelinhas decorativas."""
-    for y in range(HEIGHT):
-        t = y / HEIGHT
-        r = int(PEARL[0] * (1 - t) + LIGHT_PINK[0] * t)
-        g = int(PEARL[1] * (1 - t) + LIGHT_PINK[1] * t)
-        b = int(PEARL[2] * (1 - t) + LIGHT_PINK[2] * t)
-        pygame.draw.line(surface, (r, g, b), (0, y), (WIDTH, y))
+    surface.blit(BG_IMAGE, (0, 0))
 
+def desenhar_brilho(surface, x, y, tamanho, cor):
+    pygame.draw.line(surface, cor, (x - tamanho, y), (x + tamanho, y), 2)
+    pygame.draw.line(surface, cor, (x, y - tamanho), (x, y + tamanho), 2)
+    pygame.draw.circle(surface, cor, (x, y), 2)
 
-    passarela_w = 280
-    passarela_x = WIDTH // 2 - passarela_w // 2
-    pygame.draw.rect(surface, HOT_PINK, (passarela_x, 0, passarela_w, HEIGHT))
-    # Bordas brancas da passarela
-    pygame.draw.rect(surface, WHITE, (passarela_x - 4, 0, 4, HEIGHT))
-    pygame.draw.rect(surface, WHITE, (passarela_x + passarela_w, 0, 4, HEIGHT))
-
-
-    estrelas = [
-        (80, 100), (200, 250), (140, 480), (90, 620),
-        (1100, 90), (1180, 280), (1140, 500), (1080, 650),
-        (380, 180), (380, 540), (900, 160), (900, 560),
-    ]
-    for ex, ey in estrelas:
-        desenhar_brilho(surface, ex, ey, 8, WHITE)
-    
 class Barbie(pygame.sprite.Sprite):
-    """A boneca jogadora. Desenhada por formas geométricas."""
-
     def __init__(self):
         super().__init__()
         self.pos = pygame.math.Vector2(PLAYER_START_X, PLAYER_START_Y)
@@ -56,7 +51,6 @@ class Barbie(pygame.sprite.Sprite):
         self.original_speed = self.speed
         self.radius = PLAYER_RADIUS
 
-        # Vida e estado
         self.max_health = MAX_HEALTH
         self.current_health = MAX_HEALTH
         self.invincible_timer = 0
@@ -64,7 +58,6 @@ class Barbie(pygame.sprite.Sprite):
         self.extra_lives = 0
         self.max_extra_lives = 2
 
-        # Power-ups
         self.is_immune = False
         self.immune_until = 0
         self.speed_boost_until = 0
@@ -72,63 +65,26 @@ class Barbie(pygame.sprite.Sprite):
         self.magnet_until = 0
         self.magnet_active = False
 
-        # "rect" para colisões (usado pelo sprite group)
-        self.image = pygame.Surface((self.radius * 2, self.radius * 3), pygame.SRCALPHA)
+        self.image = BARBIE_IMAGE
         self.rect = self.image.get_rect(center=self.pos)
-     def desenhar(self, surface):
+
+    def desenhar(self, surface):
         if not self.alive:
             return
 
-        # Pisca quando invencível
         if self.invincible_timer > 0 and (self.invincible_timer // 5) % 2 == 0:
             return
 
+        rect = self.image.get_rect(center=(int(self.pos.x), int(self.pos.y)))
+        surface.blit(self.image, rect)
+        self.rect = rect  
+
         x, y = int(self.pos.x), int(self.pos.y)
-
-        # Vestido (triângulo rosa)
-        pygame.draw.polygon(surface, HOT_PINK, [
-            (x, y + 8),
-            (x - 30, y + 40),
-            (x + 30, y + 40)
-        ])
-        # Detalhe do vestido (cinturinha)
-        pygame.draw.rect(surface, DARK_PINK, (x - 14, y + 6, 28, 6))
-
-
-        pygame.draw.rect(surface, (255, 220, 190), (x - 4, y - 6, 8, 12))
-
-        pygame.draw.circle(surface, GOLD, (x, y - 18), 22)
-        pygame.draw.rect(surface, GOLD, (x - 22, y - 18, 44, 32))
-
-
-        pygame.draw.circle(surface, (255, 220, 190), (x, y - 18), 16)
-
-
-        pygame.draw.circle(surface, BLACK, (x - 6, y - 20), 2)
-        pygame.draw.circle(surface, BLACK, (x + 6, y - 20), 2)
-
-        pygame.draw.arc(surface, DARK_PINK,
-                        (x - 5, y - 16, 10, 8), math.pi, 2 * math.pi, 2)
-
-
-        pygame.draw.polygon(surface, GOLD, [
-            (x - 10, y - 32), (x - 6, y - 38),
-            (x - 2, y - 33), (x + 2, y - 38),
-            (x + 6, y - 33), (x + 10, y - 38),
-            (x + 10, y - 30), (x - 10, y - 30)
-        ])
-
-
         if self.is_immune:
-            pygame.draw.circle(surface, MINT, (x, y + 10), 45, 3)
-
+            pygame.draw.circle(surface, MINT, (x, y), self.radius + 15, 3)
         if self.speed_boost_active:
-            pygame.draw.circle(surface, GOLD, (x, y + 10), 50, 2)
+            pygame.draw.circle(surface, GOLD, (x, y), self.radius + 20, 2)
 
-
-        self.rect.center = (x, y + 10)
-
-   
     def processar_input(self):
         if not self.alive:
             return
@@ -143,18 +99,14 @@ class Barbie(pygame.sprite.Sprite):
             dx = -1
         if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
             dx = 1
-
         if dx != 0 and dy != 0:
             dx *= 0.7071
             dy *= 0.7071
 
         self.pos.x += dx * self.speed
         self.pos.y += dy * self.speed
-
-        # Limites da tela
         self.pos.x = max(self.radius, min(self.pos.x, WIDTH - self.radius))
         self.pos.y = max(self.radius + 20, min(self.pos.y, HEIGHT - self.radius - 20))
-
 
     def levar_dano(self, percent=DISASTER_DAMAGE):
         if self.invincible_timer > 0 or not self.alive or self.is_immune:
@@ -168,8 +120,6 @@ class Barbie(pygame.sprite.Sprite):
             else:
                 self.current_health = 0
                 self.alive = False
-
-    # ------ Power-ups ------
     def ativar_powerup(self, tipo):
         agora = pygame.time.get_ticks()
         if tipo == 'health':
@@ -187,7 +137,6 @@ class Barbie(pygame.sprite.Sprite):
         elif tipo == 'extra_life':
             if self.extra_lives < self.max_extra_lives:
                 self.extra_lives += 1
-
     def update(self):
         if not self.alive:
             return
@@ -202,9 +151,161 @@ class Barbie(pygame.sprite.Sprite):
             self.magnet_active = False
         if self.invincible_timer > 0:
             self.invincible_timer -= 1
-        
+
+TIPOS_ITEM = ['bag', 'lipstick', 'shoe', 'jewel', 'crown']
+
+PESOS_ITEM = [50, 25, 15, 8, 2]
+
+SCORE_POR_TIPO = {
+    'bag': SCORE_BAG,
+    'lipstick': SCORE_LIPSTICK,
+    'shoe': SCORE_SHOE,
+    'jewel': SCORE_JEWEL,
+    'crown': SCORE_CROWN,
+}
+
+class Item(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.tipo = random.choices(TIPOS_ITEM, weights=PESOS_ITEM, k=1)[0]
+        self.radius = ITEM_RADIUS
+        self.pos = pygame.math.Vector2(
+            random.randint(50, WIDTH - 50),
+            random.randint(-300, -50)
+        )
+        self.speed = ITEM_FALL_SPEED + random.uniform(0, 1.5)
+        self.fase = random.uniform(0, 2 * math.pi)
+
+        self.image = ITEM_IMAGES[self.tipo]
+        self.rect = self.image.get_rect(center=self.pos)
+    def desenhar(self, surface):
+        surface.blit(self.image, self.image.get_rect(center=(int(self.pos.x), int(self.pos.y))))
+
+    def update(self):
+        self.pos.y += self.speed
+        self.fase += 0.05
+        self.pos.x += math.sin(self.fase) * 0.6
+        self.rect.center = (int(self.pos.x), int(self.pos.y))
+
+        if barbie_ref[0] is not None and barbie_ref[0].magnet_active and barbie_ref[0].alive:
+            alvo = pygame.math.Vector2(barbie_ref[0].pos)
+            direcao = alvo - self.pos
+            if direcao.length() < 250 and direcao.length() > 0:
+                direcao = direcao.normalize() * 6
+                self.pos += direcao
+
+        if self.pos.y > HEIGHT + 50:
+            self.kill()
+
+barbie_ref = [None]
+
+class FashionDisaster(pygame.sprite.Sprite):
+    def __init__(self, posicao):
+        super().__init__()
+        self.pos = pygame.math.Vector2(posicao)
+        self.radius = DISASTER_RADIUS
+        self.speed = DISASTER_SPEED + random.uniform(0, 0.8)
+        self.fase = random.uniform(0, 2 * math.pi)
+        # >>> essas duas linhas precisam estar AQUI DENTRO do __init__ <
+        self.image = DISASTER_IMAGE
+        self.rect = self.image.get_rect(center=self.pos)
+    def desenhar(self, surface):
+        surface.blit(self.image, self.image.get_rect(center=(int(self.pos.x), int(self.pos.y))))
+    def perseguir(self, alvo_pos):
+        direcao = pygame.math.Vector2(alvo_pos) - self.pos
+        if direcao.length() > 0:
+            direcao = direcao.normalize()
+            self.pos += direcao * self.speed
+        self.fase += 0.1
+        self.pos.y += math.sin(self.fase) * 0.3
+        self.rect.center = (int(self.pos.x), int(self.pos.y))
+
+    def update(self):
+        if barbie_ref[0] is not None and barbie_ref[0].alive:
+            self.perseguir(barbie_ref[0].pos)
+
+def spawn_disasters(grupo, quantidade):
+    for _ in range(quantidade):
+        lado = random.choice(['top', 'bottom', 'left', 'right'])
+        if lado == 'top':
+            pos = (random.randint(0, WIDTH), -50)
+        elif lado == 'bottom':
+            pos = (random.randint(0, WIDTH), HEIGHT + 50)
+        elif lado == 'left':
+            pos = (-50, random.randint(0, HEIGHT))
+        else:
+            pos = (WIDTH + 50, random.randint(0, HEIGHT))
+        grupo.add(FashionDisaster(pos))
+
+TIPOS_POWERUP = ['health', 'immunity', 'speed', 'magnet', 'extra_life', 'sparkle']
+
+class PowerUp(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.tipo = random.choice(TIPOS_POWERUP)
+        self.radius = POWERUP_RADIUS
+        self.pos = pygame.math.Vector2(
+            random.randint(80, WIDTH - 80),
+            random.randint(80, HEIGHT - 80)
+        )
+        self.criado_em = pygame.time.get_ticks()
+        self.duracao_na_tela = 10000  # some depois de 10s se ninguém pegar
+        self.fase = 0
+        self.image = pygame.Surface((self.radius * 2, self.radius * 2), pygame.SRCALPHA)
+        self.rect = self.image.get_rect(center=self.pos)
+
+    def desenhar(self, surface):
+        x, y = int(self.pos.x), int(self.pos.y)
+        self.fase += 0.1
+        escala = 1 + 0.15 * math.sin(self.fase)
+
+        pygame.draw.circle(surface, WHITE, (x, y), int(self.radius + 4 * escala), 2)
+
+        if self.tipo == 'health':
+            desenhar_coracao(surface, x, y, int(14 * escala), RED)
+        elif self.tipo == 'immunity':
+            # Escudo mint
+            pygame.draw.circle(surface, MINT, (x, y), int(self.radius * escala))
+            pygame.draw.circle(surface, WHITE, (x, y), int(self.radius * escala), 3)
+            # cruz
+            pygame.draw.line(surface, WHITE, (x - 8, y), (x + 8, y), 3)
+            pygame.draw.line(surface, WHITE, (x, y - 8), (x, y + 8), 3)
+        elif self.tipo == 'speed':
+            # Raio dourado
+            pygame.draw.polygon(surface, GOLD, [
+                (x - 4, y - 16), (x + 8, y - 4), (x + 2, y - 2),
+                (x + 6, y + 16), (x - 8, y + 2), (x - 2, y)
+            ])
+        elif self.tipo == 'magnet':
+            # Ferradura magnética
+            pygame.draw.arc(surface, (220, 50, 50),
+                            (x - 14, y - 14, 28, 28), 0, math.pi, 6)
+            pygame.draw.rect(surface, (220, 50, 50), (x - 14, y - 2, 6, 12))
+            pygame.draw.rect(surface, (220, 50, 50), (x + 8, y - 2, 6, 12))
+            pygame.draw.rect(surface, WHITE, (x - 14, y + 8, 6, 4))
+            pygame.draw.rect(surface, WHITE, (x + 8, y + 8, 6, 4))
+        elif self.tipo == 'extra_life':
+            desenhar_coracao(surface, x, y, 12, BARBIE_PINK)
+            pygame.draw.polygon(surface, WHITE, [
+                (x - 12, y - 4), (x - 22, y - 8), (x - 18, y), (x - 12, y + 2)
+            ])
+            pygame.draw.polygon(surface, WHITE, [
+                (x + 12, y - 4), (x + 22, y - 8), (x + 18, y), (x + 12, y + 2)
+            ])
+        elif self.tipo == 'sparkle':
+            pontos = []
+            for i in range(10):
+                ang = -math.pi / 2 + i * math.pi / 5
+                r = 16 if i % 2 == 0 else 7
+                pontos.append((x + r * math.cos(ang), y + r * math.sin(ang)))
+            pygame.draw.polygon(surface, GOLD, pontos)
+            pygame.draw.polygon(surface, WHITE, pontos, 2)
+
+    def update(self):
+        if pygame.time.get_ticks() - self.criado_em > self.duracao_na_tela:
+            self.kill()
+
 def desenhar_hud(surface, barbie, score, wave):
-    # Barra de vida
     barra_x, barra_y, barra_w, barra_h = 20, 20, 300, 24
     pygame.draw.rect(surface, DARK_PINK, (barra_x - 3, barra_y - 3, barra_w + 6, barra_h + 6), border_radius=8)
     pygame.draw.rect(surface, WHITE, (barra_x, barra_y, barra_w, barra_h), border_radius=6)
@@ -213,23 +314,18 @@ def desenhar_hud(surface, barbie, score, wave):
     txt = font_small.render(f"Vida: {int(barbie.current_health)}/{barbie.max_health}", True, BLACK)
     surface.blit(txt, (barra_x + 8, barra_y + 1))
 
-    # Score
     score_text = font_med.render(f"💎 {score}", True, DARK_PINK)
     surface.blit(score_text, (WIDTH - score_text.get_width() - 30, 20))
 
-    # Wave
     wave_text = font_small.render(f"Onda {wave}", True, DARK_PINK)
     surface.blit(wave_text, (WIDTH - wave_text.get_width() - 30, 65))
 
-    # Vidas extras (coração no canto inferior esquerdo)
     for i in range(barbie.extra_lives):
         cx = 30 + i * 35
         cy = HEIGHT - 30
         desenhar_coracao(surface, cx, cy, 12, RED)
 
-
 def desenhar_coracao(surface, x, y, tamanho, cor):
-    """Desenha um coração simples (dois círculos + triângulo)."""
     pygame.draw.circle(surface, cor, (x - tamanho // 2, y - tamanho // 3), tamanho // 2)
     pygame.draw.circle(surface, cor, (x + tamanho // 2, y - tamanho // 3), tamanho // 2)
     pygame.draw.polygon(surface, cor, [
@@ -244,6 +340,7 @@ GAME_OVER = 2
 GET_PLAYER_NAME = 3
 SHOW_RANKING = 4
 RANKING_FILE = 'ranking.json'
+
 def carregar_ranking():
     if not os.path.exists(RANKING_FILE):
         return []
@@ -258,7 +355,7 @@ def salvar_ranking(ranking):
         with open(RANKING_FILE, 'w') as f:
             json.dump(ranking, f, indent=2)
     except OSError:
-        pass
+        pass  
 
 def adicionar_ao_ranking(nome, score):
     ranking = carregar_ranking()
