@@ -6,7 +6,7 @@ import random
 import json
 import os
 from sys import exit
-from parametros import *
+from indices import *
 
 pygame.init()
 
