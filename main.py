@@ -94,24 +94,23 @@ class Barbie(pygame.sprite.Sprite):
         # Detalhe do vestido (cinturinha)
         pygame.draw.rect(surface, DARK_PINK, (x - 14, y + 6, 28, 6))
 
-        # Pescoço
+
         pygame.draw.rect(surface, (255, 220, 190), (x - 4, y - 6, 8, 12))
 
-        # Cabelo (loiro, atrás da cabeça)
         pygame.draw.circle(surface, GOLD, (x, y - 18), 22)
         pygame.draw.rect(surface, GOLD, (x - 22, y - 18, 44, 32))
 
-        # Rosto
+
         pygame.draw.circle(surface, (255, 220, 190), (x, y - 18), 16)
 
-        # Olhos
+
         pygame.draw.circle(surface, BLACK, (x - 6, y - 20), 2)
         pygame.draw.circle(surface, BLACK, (x + 6, y - 20), 2)
-        # Sorriso
+
         pygame.draw.arc(surface, DARK_PINK,
                         (x - 5, y - 16, 10, 8), math.pi, 2 * math.pi, 2)
 
-        # Coroinha
+
         pygame.draw.polygon(surface, GOLD, [
             (x - 10, y - 32), (x - 6, y - 38),
             (x - 2, y - 33), (x + 2, y - 38),
@@ -119,18 +118,17 @@ class Barbie(pygame.sprite.Sprite):
             (x + 10, y - 30), (x - 10, y - 30)
         ])
 
-        # Brilho de imunidade
+
         if self.is_immune:
             pygame.draw.circle(surface, MINT, (x, y + 10), 45, 3)
 
-        # Aura de velocidade
         if self.speed_boost_active:
             pygame.draw.circle(surface, GOLD, (x, y + 10), 50, 2)
 
-        # Atualiza rect pra colisões
+
         self.rect.center = (x, y + 10)
 
-    # ------ Input ------
+   
     def processar_input(self):
         if not self.alive:
             return
@@ -146,7 +144,6 @@ class Barbie(pygame.sprite.Sprite):
         if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
             dx = 1
 
-        # Normalizar diagonal pra não andar mais rápido
         if dx != 0 and dy != 0:
             dx *= 0.7071
             dy *= 0.7071
@@ -158,7 +155,7 @@ class Barbie(pygame.sprite.Sprite):
         self.pos.x = max(self.radius, min(self.pos.x, WIDTH - self.radius))
         self.pos.y = max(self.radius + 20, min(self.pos.y, HEIGHT - self.radius - 20))
 
-    # ------ Dano ------
+
     def levar_dano(self, percent=DISASTER_DAMAGE):
         if self.invincible_timer > 0 or not self.alive or self.is_immune:
             return
@@ -191,7 +188,6 @@ class Barbie(pygame.sprite.Sprite):
             if self.extra_lives < self.max_extra_lives:
                 self.extra_lives += 1
 
-    # ------ Atualização por frame ------
     def update(self):
         if not self.alive:
             return
@@ -206,3 +202,38 @@ class Barbie(pygame.sprite.Sprite):
             self.magnet_active = False
         if self.invincible_timer > 0:
             self.invincible_timer -= 1
+        
+def desenhar_hud(surface, barbie, score, wave):
+    # Barra de vida
+    barra_x, barra_y, barra_w, barra_h = 20, 20, 300, 24
+    pygame.draw.rect(surface, DARK_PINK, (barra_x - 3, barra_y - 3, barra_w + 6, barra_h + 6), border_radius=8)
+    pygame.draw.rect(surface, WHITE, (barra_x, barra_y, barra_w, barra_h), border_radius=6)
+    frac = max(0, barbie.current_health / barbie.max_health)
+    pygame.draw.rect(surface, RED, (barra_x, barra_y, int(barra_w * frac), barra_h), border_radius=6)
+    txt = font_small.render(f"Vida: {int(barbie.current_health)}/{barbie.max_health}", True, BLACK)
+    surface.blit(txt, (barra_x + 8, barra_y + 1))
+
+    # Score
+    score_text = font_med.render(f"💎 {score}", True, DARK_PINK)
+    surface.blit(score_text, (WIDTH - score_text.get_width() - 30, 20))
+
+    # Wave
+    wave_text = font_small.render(f"Onda {wave}", True, DARK_PINK)
+    surface.blit(wave_text, (WIDTH - wave_text.get_width() - 30, 65))
+
+    # Vidas extras (coração no canto inferior esquerdo)
+    for i in range(barbie.extra_lives):
+        cx = 30 + i * 35
+        cy = HEIGHT - 30
+        desenhar_coracao(surface, cx, cy, 12, RED)
+
+
+def desenhar_coracao(surface, x, y, tamanho, cor):
+    """Desenha um coração simples (dois círculos + triângulo)."""
+    pygame.draw.circle(surface, cor, (x - tamanho // 2, y - tamanho // 3), tamanho // 2)
+    pygame.draw.circle(surface, cor, (x + tamanho // 2, y - tamanho // 3), tamanho // 2)
+    pygame.draw.polygon(surface, cor, [
+        (x - tamanho, y - tamanho // 3),
+        (x + tamanho, y - tamanho // 3),
+        (x, y + tamanho)
+    ])
