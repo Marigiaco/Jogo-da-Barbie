@@ -548,3 +548,7 @@ def tela_game_over(score, nome):
 
         pygame.display.update()
         clock.tick(FPS)
+def spawn_itens(grupo, quantidade):
+    for _ in range(quantidade):
+        grupo.add(Item())
+        
