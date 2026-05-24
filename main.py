@@ -364,3 +364,54 @@ def adicionar_ao_ranking(nome, score):
     ranking = ranking[:10]
     salvar_ranking(ranking)
     return ranking
+
+
+
+def tela_inicio():
+    """Tela inicial. Retorna o próximo estado."""
+    btn_play = pygame.Rect(WIDTH // 2 - 130, HEIGHT // 2 - 20, 260, 60)
+    btn_rank = pygame.Rect(WIDTH // 2 - 130, HEIGHT // 2 + 60, 260, 60)
+    btn_quit = pygame.Rect(WIDTH // 2 - 130, HEIGHT // 2 + 140, 260, 60)
+
+    while True:
+        desenhar_cenario(window)
+
+        # Título
+        titulo = font_huge.render("Barbie", True, DARK_PINK)
+        sub = font_big.render("Shopping Spree", True, HOT_PINK)
+        window.blit(titulo, (WIDTH // 2 - titulo.get_width() // 2, 80))
+        window.blit(sub, (WIDTH // 2 - sub.get_width() // 2, 180))
+
+        # Botões
+        for rect, label, cor in [
+            (btn_play, "JOGAR", HOT_PINK),
+            (btn_rank, "RANKING", BARBIE_PINK),
+            (btn_quit, "SAIR", DARK_PINK),
+        ]:
+            pygame.draw.rect(window, cor, rect, border_radius=20)
+            pygame.draw.rect(window, WHITE, rect, 3, border_radius=20)
+            txt = font_med.render(label, True, WHITE)
+            window.blit(txt, (rect.centerx - txt.get_width() // 2,
+                              rect.centery - txt.get_height() // 2))
+
+        dica = font_small.render("Use WASD ou setas para mover. Colete itens, evite as nuvens cinzas!", True, DARK_PINK)
+        window.blit(dica, (WIDTH // 2 - dica.get_width() // 2, HEIGHT - 60))
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                pygame.quit()
+                exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if btn_play.collidepoint(event.pos):
+                    return GET_PLAYER_NAME
+                if btn_rank.collidepoint(event.pos):
+                    return SHOW_RANKING
+                if btn_quit.collidepoint(event.pos):
+                    pygame.quit()
+                    exit()
+
+        pygame.display.update()
+        clock.tick(FPS)
