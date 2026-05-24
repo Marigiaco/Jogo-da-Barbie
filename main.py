@@ -237,3 +237,18 @@ def desenhar_coracao(surface, x, y, tamanho, cor):
         (x + tamanho, y - tamanho // 3),
         (x, y + tamanho)
     ])
+
+START_SCREEN = 0
+GAME_ACTIVE = 1
+GAME_OVER = 2
+GET_PLAYER_NAME = 3
+SHOW_RANKING = 4
+RANKING_FILE = 'ranking.json'
+def carregar_ranking():
+    if not os.path.exists(RANKING_FILE):
+        return []
+    try:
+        with open(RANKING_FILE, 'r') as f:
+            return json.load(f)
+    except (json.JSONDecodeError, OSError):
+        return []
