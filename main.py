@@ -629,3 +629,27 @@ def rodar_partida(nome_jogador):
 
         pygame.display.update()
         clock.tick(FPS)
+
+
+
+def main():
+    estado = START_SCREEN
+    nome_jogador = ""
+    ultimo_score = 0
+
+    while True:
+        if estado == START_SCREEN:
+            estado = tela_inicio()
+        elif estado == GET_PLAYER_NAME:
+            estado, nome_jogador = tela_nome()
+        elif estado == GAME_ACTIVE:
+            ultimo_score = rodar_partida(nome_jogador)
+            estado = GAME_OVER
+        elif estado == GAME_OVER:
+            estado = tela_game_over(ultimo_score, nome_jogador)
+        elif estado == SHOW_RANKING:
+            estado = tela_ranking()
+
+
+if name == 'main':
+    main()
