@@ -415,3 +415,45 @@ def tela_inicio():
 
         pygame.display.update()
         clock.tick(FPS)
+def tela_nome():
+    """Pede o nome da jogadora. Retorna (estado, nome)."""
+    nome = ""
+    input_rect = pygame.Rect(WIDTH // 2 - 200, HEIGHT // 2, 400, 60)
+    btn_ok = pygame.Rect(WIDTH // 2 - 100, HEIGHT // 2 + 90, 200, 60)
+
+    while True:
+        desenhar_cenario(window)
+        titulo = font_big.render("Qual é o seu nome?", True, DARK_PINK)
+        window.blit(titulo, (WIDTH // 2 - titulo.get_width() // 2, HEIGHT // 3))
+
+        pygame.draw.rect(window, WHITE, input_rect, border_radius=12)
+        pygame.draw.rect(window, DARK_PINK, input_rect, 3, border_radius=12)
+        txt = font_med.render(nome + "|", True, BLACK)
+        window.blit(txt, (input_rect.x + 12, input_rect.y + 12))
+
+        pygame.draw.rect(window, HOT_PINK, btn_ok, border_radius=16)
+        pygame.draw.rect(window, WHITE, btn_ok, 3, border_radius=16)
+        ok = font_med.render("COMEÇAR", True, WHITE)
+        window.blit(ok, (btn_ok.centerx - ok.get_width() // 2,
+                         btn_ok.centery - ok.get_height() // 2))
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    return START_SCREEN, ""
+                if event.key == pygame.K_RETURN and nome.strip():
+                    return GAME_ACTIVE, nome.strip()
+                if event.key == pygame.K_BACKSPACE:
+                    nome = nome[:-1]
+                else:
+                    if len(nome) < 15 and event.unicode.isprintable():
+                        nome += event.unicode
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if btn_ok.collidepoint(event.pos) and nome.strip():
+                    return GAME_ACTIVE, nome.strip()
+
+        pygame.display.update()
+        clock.tick(FPS)
