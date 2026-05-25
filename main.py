@@ -365,13 +365,12 @@ def adicionar_ao_ranking(nome, score):
 
 def tela_inicio():
     # Cria os rects (área retangular) de cada botão centralizados horizontalmente
-    # Os números do y (450, 540, 630) você ajusta dependendo de onde quer que apareçam
+
     btn_jogar_rect   = BTN_JOGAR_IMG.get_rect(center=(WIDTH // 2, 450))
     btn_ranking_rect = BTN_RANKING_IMG.get_rect(center=(WIDTH // 2, 540))
     btn_sair_rect    = BTN_SAIR_IMG.get_rect(center=(WIDTH // 2, 630))
 
     while True:
-        mouse_pos = pygame.mouse.get_pos()
 
         # Trata os eventos (clique, fechar janela, etc)
         for event in pygame.event.get():
@@ -406,7 +405,6 @@ def tela_inicio():
 def tela_nome():
     nome = ""
     input_rect = pygame.Rect(WIDTH // 2 - 200, HEIGHT // 2, 400, 60)
-    # Rect do botão de imagem (substitui o pygame.Rect antigo)
     btn_ok_rect = BTN_COMECAR_IMG.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 120))
 
     while True:
@@ -436,7 +434,6 @@ def tela_nome():
                     if len(nome) < 15 and event.unicode.isprintable():
                         nome += event.unicode
             if event.type == pygame.MOUSEBUTTONDOWN:
-                # >>> Usa o rect do botão de imagem <
                 if btn_ok_rect.collidepoint(event.pos) and nome.strip():
                     return GAME_ACTIVE, nome.strip()
 
@@ -447,7 +444,6 @@ def tela_nome():
 
 
 def tela_ranking():
-    # Rect do botão de imagem
     btn_back_rect = BTN_VOLTAR_IMG.get_rect(center=(WIDTH // 2, HEIGHT - 60))
 
     while True:
@@ -463,7 +459,6 @@ def tela_ranking():
                 linha = font_med.render(f"{i + 1}. {r['nome']}  -  {r['score']}", True, DARK_PINK)
                 window.blit(linha, (WIDTH // 2 - 200, 150 + i * 40))
 
-        # >>> Desenha o botão como IMAGEM <
         window.blit(BTN_VOLTAR_IMG, btn_back_rect)
 
         for event in pygame.event.get():
