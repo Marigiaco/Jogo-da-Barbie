@@ -407,7 +407,8 @@ def tela_inicio():
 def tela_nome():
     nome = ""
     input_rect = pygame.Rect(WIDTH // 2 - 200, HEIGHT // 2, 400, 60)
-    btn_ok = pygame.Rect(WIDTH // 2 - 100, HEIGHT // 2 + 90, 200, 60)
+    # Rect do botão de imagem (substitui o pygame.Rect antigo)
+    btn_ok_rect = BTN_COMECAR_IMG.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 120))
 
     while True:
         desenhar_cenario(window)
@@ -419,11 +420,7 @@ def tela_nome():
         txt = font_med.render(nome + "|", True, BLACK)
         window.blit(txt, (input_rect.x + 12, input_rect.y + 12))
 
-        pygame.draw.rect(window, HOT_PINK, btn_ok, border_radius=16)
-        pygame.draw.rect(window, WHITE, btn_ok, 3, border_radius=16)
-        ok = font_med.render("COMEÇAR", True, WHITE)
-        window.blit(ok, (btn_ok.centerx - ok.get_width() // 2,
-                         btn_ok.centery - ok.get_height() // 2))
+        window.blit(BTN_COMECAR_IMG, btn_ok_rect)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -440,7 +437,8 @@ def tela_nome():
                     if len(nome) < 15 and event.unicode.isprintable():
                         nome += event.unicode
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if btn_ok.collidepoint(event.pos) and nome.strip():
+                # >>> Usa o rect do botão de imagem <
+                if btn_ok_rect.collidepoint(event.pos) and nome.strip():
                     return GAME_ACTIVE, nome.strip()
 
         pygame.display.update()
