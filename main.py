@@ -371,7 +371,6 @@ def tela_inicio():
     btn_sair_rect    = BTN_SAIR_IMG.get_rect(center=(WIDTH // 2, 630))
 
     while True:
-        # Pega a posição atual do mouse (pra efeito de hover, opcional)
         mouse_pos = pygame.mouse.get_pos()
 
         # Trata os eventos (clique, fechar janela, etc)
