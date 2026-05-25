@@ -54,6 +54,12 @@ TELA_INICIO_IMG = carregar_imagem("tela_inicio.png", (WIDTH, HEIGHT))
 BTN_JOGAR_IMG = carregar_imagem("botao_jogar.png", (220,70))
 BTN_RANKING_IMG = carregar_imagem("botao_ranking.png", (220,70))
 BTN_SAIR_IMG = carregar_imagem("botao_sair.png", (220,70))
+BTN_COMECAR_IMG = carregar_imagem('botao_comecar.png', (220, 70))
+BTN_JOGAR_NOVAMENTE_IMG = carregar_imagem('botao_jogar_novamente.png', (220, 70))
+BTN_MENU_IMG = carregar_imagem('botao_menu.png', (220, 70))
+BTN_VOLTAR_IMG = carregar_imagem('botao_voltar.png', (180, 55))
+
+
 font_small = pygame.font.SysFont('Arial', 24, bold=True)
 font_med = pygame.font.SysFont('Arial', 36, bold=True)
 font_big = pygame.font.SysFont('Arial', 64, bold=True)
