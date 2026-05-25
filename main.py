@@ -378,9 +378,9 @@ def tela_inicio():
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 # Se o clique caiu DENTRO do rect do botão Jogar...
                 if btn_jogar_rect.collidepoint(event.pos):
-                    return NAME_SCREEN  # ou GAMEPLAY, dependendo da sua máquina de estados
+                    return GET_PLAYER_NAME  # ou GAMEPLAY, dependendo da sua máquina de estados
                 if btn_ranking_rect.collidepoint(event.pos):
-                    return RANKING_SCREEN
+                    return SHOW_RANKING 
                 if btn_sair_rect.collidepoint(event.pos):
                     pygame.quit()
                     exit()
