@@ -480,13 +480,12 @@ def tela_ranking():
         clock.tick(FPS)
 
 
-
 def tela_game_over(score, nome):
     if nome:
         adicionar_ao_ranking(nome, score)
 
-    btn_again = pygame.Rect(WIDTH // 2 - 220, HEIGHT // 2 + 80, 200, 60)
-    btn_menu = pygame.Rect(WIDTH // 2 + 20, HEIGHT // 2 + 80, 200, 60)
+    btn_again_rect = BTN_JOGAR_NOVAMENTE_IMG.get_rect(center=(WIDTH // 2 - 130, HEIGHT // 2 + 110))
+    btn_menu_rect = BTN_MENU_IMG.get_rect(center=(WIDTH // 2 + 130, HEIGHT // 2 + 110))
 
     while True:
         desenhar_cenario(window)
@@ -506,17 +505,9 @@ def tela_game_over(score, nome):
             tag = font_small.render(f"Salvo no ranking como '{nome}'", True, WHITE)
             window.blit(tag, (WIDTH // 2 - tag.get_width() // 2, HEIGHT // 2 + 40))
 
-        pygame.draw.rect(window, HOT_PINK, btn_again, border_radius=16)
-        pygame.draw.rect(window, WHITE, btn_again, 3, border_radius=16)
-        txt = font_small.render("JOGAR DE NOVO", True, WHITE)
-        window.blit(txt, (btn_again.centerx - txt.get_width() // 2,
-                          btn_again.centery - txt.get_height() // 2))
 
-        pygame.draw.rect(window, DARK_PINK, btn_menu, border_radius=16)
-        pygame.draw.rect(window, WHITE, btn_menu, 3, border_radius=16)
-        txt2 = font_small.render("MENU", True, WHITE)
-        window.blit(txt2, (btn_menu.centerx - txt2.get_width() // 2,
-                           btn_menu.centery - txt2.get_height() // 2))
+        window.blit(BTN_JOGAR_NOVAMENTE_IMG, btn_again_rect)
+        window.blit(BTN_MENU_IMG, btn_menu_rect)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -525,13 +516,14 @@ def tela_game_over(score, nome):
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 return START_SCREEN
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if btn_again.collidepoint(event.pos):
+                if btn_again_rect.collidepoint(event.pos):
                     return GET_PLAYER_NAME
-                if btn_menu.collidepoint(event.pos):
+                if btn_menu_rect.collidepoint(event.pos):
                     return START_SCREEN
 
         pygame.display.update()
         clock.tick(FPS)
+
 
 def spawn_itens(grupo, quantidade):
     for _ in range(quantidade):
