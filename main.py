@@ -99,19 +99,19 @@ class Barbie(pygame.sprite.Sprite): # Classe que representa a Barbie,  usa Sprit
         self.magnet_active = False #Se o magnet está ativo
 
         self.image = BARBIE_IMAGE 
-        self.rect = self.image.get_rect(center=self.pos)
+        self.rect = self.image.get_rect(center=self.pos) #Cria a caixa de colisão a partir da imagem da Barbie
 
-    def desenhar(self, surface):
-        if not self.alive:
+    def desenhar(self, surface): #Desenha a Barbie na tela
+        if not self.alive: # Se a Barbie não está viva, ela some quando morrer
             return
 
-        if self.invincible_timer > 0 and (self.invincible_timer // 5) % 2 == 0:
-            return
+        if self.invincible_timer > 0 and (self.invincible_timer // 5) % 2 == 0: # Pisca a Barbie quando estiver invencível
+            return 
 
-        self.rect.center = (int(self.pos.x), int(self.pos.y))
-        surface.blit(self.image, self.rect) 
+        self.rect.center = (int(self.pos.x), int(self.pos.y)) #Atualiza a posição da caixa de colisão para o centro da Barbie
+        surface.blit(self.image, self.rect) # Desenha a imagem da Barbie na tela usando a caixa de colisão para posicionar
 
-        x, y = int(self.pos.x), int(self.pos.y)
+        x, y = int(self.pos.x), int(self.pos.y) # Coordenadas do centro da Barbie
         if self.is_immune:
             pygame.draw.circle(surface, MINT, (x, y), self.radius + 15, 3)
         if self.speed_boost_active:
