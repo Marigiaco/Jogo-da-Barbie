@@ -1,26 +1,24 @@
-import pygame
+import pygame 
 import math
 import random
 import json
 import os
 from sys import exit
 from indices import *
-
-pygame.init()
-
-window = pygame.display.set_mode((WIDTH, HEIGHT))
+# Importa a biblioteca Pygame e outras bibliotecas utilizadas no código
+pygame.init() # Inicializa os módulos do pygame, necessário antes do código
+window = pygame.display.set_mode((WIDTH, HEIGHT)) # Cria a aba do jogo com largura e altura definidos em indices.py
 pygame.display.set_caption('Barbie Shopping Rush')
-clock = pygame.time.Clock()
-ASSETS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'assets', 'images')
+clock = pygame.time.Clock() # Cria um Clock que controla os quadros por segundo 
+ASSETS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'assets', 'images') # chega nas assets/images,  __file__ é o caminho, join junta com 'assets/images'
 
-def carregar_imagem(nome_arquivo, tamanho=None):
-    """Carrega uma imagem da pasta assets/images/."""
-    caminho = os.path.join(ASSETS_DIR, nome_arquivo)
-    img = pygame.image.load(caminho).convert_alpha()
-    if tamanho is not None:
+def carregar_imagem(nome_arquivo, tamanho=None): 
+    caminho = os.path.join(ASSETS_DIR, nome_arquivo) # Monta o caminho completo até o arquivo (ex: /Users/.../assets/images/barbie.png)
+    img = pygame.image.load(caminho).convert_alpha() # Carrega a imagem do disco e converte pra formato com transparência (alpha)
+    if tamanho is not None: # Se foi passado um tamanho, redimensiona a imagem pra esse tamanho
         img = pygame.transform.scale(img, tamanho)
     return img
-ITEM_IMAGES = {
+ITEM_IMAGES = { # Dicionário com as imagens de cada item, todas redimensionadas pra 40x40 pixels
     'bag':      carregar_imagem('bag.png',      (40, 40)),
     'lipstick': carregar_imagem('batom.png', (40, 40)),
     'shoe':     carregar_imagem('shoe.png',     (40, 40)),
@@ -31,6 +29,7 @@ font_small = pygame.font.SysFont('Arial', 24, bold=True)
 font_med = pygame.font.SysFont('Arial', 36, bold=True)
 font_big = pygame.font.SysFont('Arial', 64, bold=True)
 font_huge = pygame.font.SysFont('Arial', 96, bold=True)
+# Cria as fontes do sistema (Arial em negrito) em tamanhos diferentes pra textos do jogo
 BG_IMAGE = carregar_imagem('background.png', (WIDTH, HEIGHT))
 BARBIE_IMAGE = carregar_imagem('barbie.png', (70, 160))
 DISASTER_IMAGE = carregar_imagem('cloud.png', (80, 60))
