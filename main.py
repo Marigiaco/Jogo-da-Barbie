@@ -25,6 +25,14 @@ ITEM_IMAGES = { # Dicionário com as imagens de cada item, todas redimensionadas
     'jewel':    carregar_imagem('jewel.png',    (40, 40)),
     'crown':    carregar_imagem('crown.png',    (40, 40)),
 }
+POWERUP_IMAGES = {
+    'health':     carregar_imagem('pu_health.png',     (60, 60)),
+    'immunity':   carregar_imagem('pu_immunity.png',   (60, 60)),
+    'speed':      carregar_imagem('pu_speed.png',      (60, 60)),
+    'magnet':     carregar_imagem('pu_magnet.png',     (60, 60)),
+    'extra_life': carregar_imagem('pu_extra_life.png', (60, 60)),
+    'sparkle':    carregar_imagem('pu_sparkle.png',    (60, 60)),
+}
 font_small = pygame.font.SysFont('Arial', 24, bold=True)
 font_med = pygame.font.SysFont('Arial', 36, bold=True)
 font_big = pygame.font.SysFont('Arial', 64, bold=True)
@@ -33,7 +41,6 @@ font_huge = pygame.font.SysFont('Arial', 96, bold=True)
 BG_IMAGE = carregar_imagem('background.png', (WIDTH, HEIGHT))
 BARBIE_IMAGE = carregar_imagem('barbie.png', (70, 160))
 DISASTER_IMAGE = carregar_imagem('cloud.png', (80, 60))
-
 def desenhar_cenario(surface):
     surface.blit(BG_IMAGE, (0, 0))
 
@@ -244,55 +251,29 @@ class PowerUp(pygame.sprite.Sprite):
         self.criado_em = pygame.time.get_ticks()
         self.duracao_na_tela = 10000  # some depois de 10s se ninguém pegar
         self.fase = 0
-        self.image = pygame.Surface((self.radius * 2, self.radius * 2), pygame.SRCALPHA)
         self.rect = self.image.get_rect(center=self.pos)
 
     def desenhar(self, surface):
+    
         x, y = int(self.pos.x), int(self.pos.y)
+
+    
         self.fase += 0.1
         escala = 1 + 0.15 * math.sin(self.fase)
 
-        pygame.draw.circle(surface, WHITE, (x, y), int(self.radius + 4 * escala), 2)
 
-        if self.tipo == 'health':
-            desenhar_coracao(surface, x, y, int(14 * escala), RED)
-        elif self.tipo == 'immunity':
-            # Escudo mint
-            pygame.draw.circle(surface, MINT, (x, y), int(self.radius * escala))
-            pygame.draw.circle(surface, WHITE, (x, y), int(self.radius * escala), 3)
-            # cruz
-            pygame.draw.line(surface, WHITE, (x - 8, y), (x + 8, y), 3)
-            pygame.draw.line(surface, WHITE, (x, y - 8), (x, y + 8), 3)
-        elif self.tipo == 'speed':
-            # Raio dourado
-            pygame.draw.polygon(surface, GOLD, [
-                (x - 4, y - 16), (x + 8, y - 4), (x + 2, y - 2),
-                (x + 6, y + 16), (x - 8, y + 2), (x - 2, y)
-            ])
-        elif self.tipo == 'magnet':
-            # Ferradura magnética
-            pygame.draw.arc(surface, (220, 50, 50),
-                            (x - 14, y - 14, 28, 28), 0, math.pi, 6)
-            pygame.draw.rect(surface, (220, 50, 50), (x - 14, y - 2, 6, 12))
-            pygame.draw.rect(surface, (220, 50, 50), (x + 8, y - 2, 6, 12))
-            pygame.draw.rect(surface, WHITE, (x - 14, y + 8, 6, 4))
-            pygame.draw.rect(surface, WHITE, (x + 8, y + 8, 6, 4))
-        elif self.tipo == 'extra_life':
-            desenhar_coracao(surface, x, y, 12, BARBIE_PINK)
-            pygame.draw.polygon(surface, WHITE, [
-                (x - 12, y - 4), (x - 22, y - 8), (x - 18, y), (x - 12, y + 2)
-            ])
-            pygame.draw.polygon(surface, WHITE, [
-                (x + 12, y - 4), (x + 22, y - 8), (x + 18, y), (x + 12, y + 2)
-            ])
-        elif self.tipo == 'sparkle':
-            pontos = []
-            for i in range(10):
-                ang = -math.pi / 2 + i * math.pi / 5
-                r = 16 if i % 2 == 0 else 7
-                pontos.append((x + r * math.cos(ang), y + r * math.sin(ang)))
-            pygame.draw.polygon(surface, GOLD, pontos)
-            pygame.draw.polygon(surface, WHITE, pontos, 2)
+        img_base = POWERUP_IMAGES[self.tipo]
+
+        nova_largura = int(img_base.get_width() * escala)
+        nova_altura = int(img_base.get_height() * escala)
+
+        img_escalada = pygame.transform.scale(img_base, (nova_largura, nova_altura))
+ 
+        rect = img_escalada.get_rect(center=(x, y))
+        surface.blit(img_escalada, rect)
+
+  
+        pygame.draw.circle(surface, WHITE, (x, y), int(self.radius + 4 * escala), 2)
 
     def update(self):
         if pygame.time.get_ticks() - self.criado_em > self.duracao_na_tela:
@@ -313,19 +294,11 @@ def desenhar_hud(surface, barbie, score, wave):
     wave_text = font_small.render(f"Onda {wave}", True, DARK_PINK)
     surface.blit(wave_text, (WIDTH - wave_text.get_width() - 30, 65))
 
+    icone_vida = pygame.transform.scale(POWERUP_IMAGES['health'], (28, 28))
     for i in range(barbie.extra_lives):
-        cx = 30 + i * 35
-        cy = HEIGHT - 30
-        desenhar_coracao(surface, cx, cy, 12, RED)
+        surface.blit(icone_vida, (20 + i * 35, HEIGHT - 45))
 
-def desenhar_coracao(surface, x, y, tamanho, cor):
-    pygame.draw.circle(surface, cor, (x - tamanho // 2, y - tamanho // 3), tamanho // 2)
-    pygame.draw.circle(surface, cor, (x + tamanho // 2, y - tamanho // 3), tamanho // 2)
-    pygame.draw.polygon(surface, cor, [
-        (x - tamanho, y - tamanho // 3),
-        (x + tamanho, y - tamanho // 3),
-        (x, y + tamanho)
-    ])
+
 
 START_SCREEN = 0
 GAME_ACTIVE = 1
