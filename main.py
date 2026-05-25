@@ -54,6 +54,12 @@ TELA_INICIO_IMG = carregar_imagem("tela_inicio.png", (WIDTH, HEIGHT))
 BTN_JOGAR_IMG = carregar_imagem("botao_jogar.png", (220,70))
 BTN_RANKING_IMG = carregar_imagem("botao_ranking.png", (220,70))
 BTN_SAIR_IMG = carregar_imagem("botao_sair.png", (220,70))
+BTN_COMECAR_IMG = carregar_imagem('botao_comecar.png', (220, 70))
+BTN_JOGAR_NOVAMENTE_IMG = carregar_imagem('botao_jogar_novamente.png', (220, 70))
+BTN_MENU_IMG = carregar_imagem('botao_menu.png', (220, 70))
+BTN_VOLTAR_IMG = carregar_imagem('botao_voltar.png', (180, 55))
+
+
 font_small = pygame.font.SysFont('Arial', 24, bold=True)
 font_med = pygame.font.SysFont('Arial', 36, bold=True)
 font_big = pygame.font.SysFont('Arial', 64, bold=True)
@@ -401,7 +407,8 @@ def tela_inicio():
 def tela_nome():
     nome = ""
     input_rect = pygame.Rect(WIDTH // 2 - 200, HEIGHT // 2, 400, 60)
-    btn_ok = pygame.Rect(WIDTH // 2 - 100, HEIGHT // 2 + 90, 200, 60)
+    # Rect do botão de imagem (substitui o pygame.Rect antigo)
+    btn_ok_rect = BTN_COMECAR_IMG.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 120))
 
     while True:
         desenhar_cenario(window)
@@ -413,11 +420,7 @@ def tela_nome():
         txt = font_med.render(nome + "|", True, BLACK)
         window.blit(txt, (input_rect.x + 12, input_rect.y + 12))
 
-        pygame.draw.rect(window, HOT_PINK, btn_ok, border_radius=16)
-        pygame.draw.rect(window, WHITE, btn_ok, 3, border_radius=16)
-        ok = font_med.render("COMEÇAR", True, WHITE)
-        window.blit(ok, (btn_ok.centerx - ok.get_width() // 2,
-                         btn_ok.centery - ok.get_height() // 2))
+        window.blit(BTN_COMECAR_IMG, btn_ok_rect)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -434,7 +437,8 @@ def tela_nome():
                     if len(nome) < 15 and event.unicode.isprintable():
                         nome += event.unicode
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if btn_ok.collidepoint(event.pos) and nome.strip():
+                # >>> Usa o rect do botão de imagem <
+                if btn_ok_rect.collidepoint(event.pos) and nome.strip():
                     return GAME_ACTIVE, nome.strip()
 
         pygame.display.update()
@@ -444,7 +448,9 @@ def tela_nome():
 
 
 def tela_ranking():
-    btn_back = pygame.Rect(WIDTH // 2 - 100, HEIGHT - 80, 200, 50)
+    # Rect do botão de imagem
+    btn_back_rect = BTN_VOLTAR_IMG.get_rect(center=(WIDTH // 2, HEIGHT - 60))
+
     while True:
         desenhar_cenario(window)
         titulo = font_big.render("Top 10 Fashionistas", True, DARK_PINK)
@@ -457,31 +463,29 @@ def tela_ranking():
             for i, r in enumerate(ranking[:10]):
                 linha = font_med.render(f"{i + 1}. {r['nome']}  -  {r['score']}", True, DARK_PINK)
                 window.blit(linha, (WIDTH // 2 - 200, 150 + i * 40))
-        pygame.draw.rect(window, HOT_PINK, btn_back, border_radius=12)
-        pygame.draw.rect(window, WHITE, btn_back, 3, border_radius=12)
-        bt = font_small.render("VOLTAR", True, WHITE)
-        window.blit(bt, (btn_back.centerx - bt.get_width() // 2,
-                         btn_back.centery - bt.get_height() // 2))
+
+        # >>> Desenha o botão como IMAGEM <
+        window.blit(BTN_VOLTAR_IMG, btn_back_rect)
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 return START_SCREEN
-            if event.type == pygame.MOUSEBUTTONDOWN and btn_back.collidepoint(event.pos):
+            if event.type == pygame.MOUSEBUTTONDOWN and btn_back_rect.collidepoint(event.pos):
                 return START_SCREEN
 
         pygame.display.update()
         clock.tick(FPS)
 
 
-
 def tela_game_over(score, nome):
     if nome:
         adicionar_ao_ranking(nome, score)
 
-    btn_again = pygame.Rect(WIDTH // 2 - 220, HEIGHT // 2 + 80, 200, 60)
-    btn_menu = pygame.Rect(WIDTH // 2 + 20, HEIGHT // 2 + 80, 200, 60)
+    btn_again_rect = BTN_JOGAR_NOVAMENTE_IMG.get_rect(center=(WIDTH // 2 - 130, HEIGHT // 2 + 110))
+    btn_menu_rect = BTN_MENU_IMG.get_rect(center=(WIDTH // 2 + 130, HEIGHT // 2 + 110))
 
     while True:
         desenhar_cenario(window)
@@ -501,17 +505,9 @@ def tela_game_over(score, nome):
             tag = font_small.render(f"Salvo no ranking como '{nome}'", True, WHITE)
             window.blit(tag, (WIDTH // 2 - tag.get_width() // 2, HEIGHT // 2 + 40))
 
-        pygame.draw.rect(window, HOT_PINK, btn_again, border_radius=16)
-        pygame.draw.rect(window, WHITE, btn_again, 3, border_radius=16)
-        txt = font_small.render("JOGAR DE NOVO", True, WHITE)
-        window.blit(txt, (btn_again.centerx - txt.get_width() // 2,
-                          btn_again.centery - txt.get_height() // 2))
 
-        pygame.draw.rect(window, DARK_PINK, btn_menu, border_radius=16)
-        pygame.draw.rect(window, WHITE, btn_menu, 3, border_radius=16)
-        txt2 = font_small.render("MENU", True, WHITE)
-        window.blit(txt2, (btn_menu.centerx - txt2.get_width() // 2,
-                           btn_menu.centery - txt2.get_height() // 2))
+        window.blit(BTN_JOGAR_NOVAMENTE_IMG, btn_again_rect)
+        window.blit(BTN_MENU_IMG, btn_menu_rect)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -520,13 +516,14 @@ def tela_game_over(score, nome):
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 return START_SCREEN
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if btn_again.collidepoint(event.pos):
+                if btn_again_rect.collidepoint(event.pos):
                     return GET_PLAYER_NAME
-                if btn_menu.collidepoint(event.pos):
+                if btn_menu_rect.collidepoint(event.pos):
                     return START_SCREEN
 
         pygame.display.update()
         clock.tick(FPS)
+
 
 def spawn_itens(grupo, quantidade):
     for _ in range(quantidade):
