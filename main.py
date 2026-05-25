@@ -112,12 +112,12 @@ class Barbie(pygame.sprite.Sprite): # Classe que representa a Barbie,  usa Sprit
         surface.blit(self.image, self.rect) # Desenha a imagem da Barbie na tela usando a caixa de colisão para posicionar
 
         x, y = int(self.pos.x), int(self.pos.y) # Coordenadas do centro da Barbie
-        if self.is_immune:
-            pygame.draw.circle(surface, MINT, (x, y), self.radius + 15, 3)
+        if self.is_immune: 
+            pygame.draw.circle(surface, MINT, (x, y), self.radius + 15, 3) # Proteje e desenha um círculo verde de proteção quando está imune
         if self.speed_boost_active:
-            pygame.draw.circle(surface, GOLD, (x, y), self.radius + 20, 2)
+            pygame.draw.circle(surface, GOLD, (x, y), self.radius + 20, 2) # Desenha circulo dourado quando o boost de velocidade está ativo
 
-    def processar_input(self):
+    def processar_input(self): # Lê o teclado e move a Barbie de acordo com as setas ou WASD
         if not self.alive:
             return
 
@@ -140,7 +140,7 @@ class Barbie(pygame.sprite.Sprite): # Classe que representa a Barbie,  usa Sprit
         self.pos.x = max(self.radius, min(self.pos.x, WIDTH - self.radius))
         self.pos.y = max(self.radius + 20, min(self.pos.y, HEIGHT - self.radius - 20))
 
-    def levar_dano(self, percent=DISASTER_DAMAGE):
+    def levar_dano(self, percent=DISASTER_DAMAGE): # Aplica dano à Barbie e verifica se ela morreu
         if self.invincible_timer > 0 or not self.alive or self.is_immune:
             return
         SOM_DANO.play()
@@ -154,7 +154,7 @@ class Barbie(pygame.sprite.Sprite): # Classe que representa a Barbie,  usa Sprit
                 self.current_health = 0
                 self.alive = False
                 SOM_GAME_OVER.play()
-    def ativar_powerup(self, tipo):
+    def ativar_powerup(self, tipo): # Ativa o powerup e define o tempo de duração de cada
         agora = pygame.time.get_ticks()
         if tipo == 'health':
             self.current_health = self.max_health
@@ -171,7 +171,7 @@ class Barbie(pygame.sprite.Sprite): # Classe que representa a Barbie,  usa Sprit
         elif tipo == 'extra_life':
             if self.extra_lives < self.max_extra_lives:
                 self.extra_lives += 1
-    def update(self):
+    def update(self): # Atualiza o estado da Barbie a cada mudança
         if not self.alive:
             return
         self.processar_input()
@@ -186,7 +186,7 @@ class Barbie(pygame.sprite.Sprite): # Classe que representa a Barbie,  usa Sprit
         if self.invincible_timer > 0:
             self.invincible_timer -= 1
 
-TIPOS_ITEM = ['bag', 'lipstick', 'shoe', 'jewel', 'crown']
+TIPOS_ITEM = ['bag', 'lipstick', 'shoe', 'jewel', 'crown'] 
 
 PESOS_ITEM = [50, 25, 15, 8, 2]
 
@@ -198,30 +198,30 @@ SCORE_POR_TIPO = {
     'crown': SCORE_CROWN,
 }
 
-class Item(pygame.sprite.Sprite):
-    def __init__(self):
-        super().__init__()
-        self.tipo = random.choices(TIPOS_ITEM, weights=PESOS_ITEM, k=1)[0]
+class Item(pygame.sprite.Sprite): #Classe que representa os itenns que caem do céu
+    def __init__(self): # Inicializa o item com um tipo aleatório, posição aleatória no topo da tela, velocidade de queda e fase para movimento oscilatório
+        super().__init__() #Inicializa a classe Sprite principal
+        self.tipo = random.choices(TIPOS_ITEM, weights=PESOS_ITEM, k=1)[0] 
         self.radius = ITEM_RADIUS
         self.pos = pygame.math.Vector2(
             random.randint(50, WIDTH - 50),
             random.randint(-300, -50)
         )
-        self.speed = ITEM_FALL_SPEED + random.uniform(0, 1.5)
+        self.speed = ITEM_FALL_SPEED + random.uniform(0, 1.5)#Velocidade de queda do item, 
         self.fase = random.uniform(0, 2 * math.pi)
 
         self.image = ITEM_IMAGES[self.tipo]
         self.rect = self.image.get_rect(center=self.pos)
-    def desenhar(self, surface):
+    def desenhar(self, surface): #Desenha o item na tela aplicando um movimento horizontal, usando seno para um efeito de balanço
         surface.blit(self.image, self.image.get_rect(center=(int(self.pos.x), int(self.pos.y))))
 
-    def update(self):
+    def update(self): #Move o item para baixo e aplica o movimento oscilatório. Se o magnet estiver ativo, o item é puxado para a Barbie
         self.pos.y += self.speed
         self.fase += 0.05
         self.pos.x += math.sin(self.fase) * 0.6
         self.rect.center = (int(self.pos.x), int(self.pos.y))
 
-        if barbie_ref[0] is not None and barbie_ref[0].magnet_active and barbie_ref[0].alive:
+        if barbie_ref[0] is not None and barbie_ref[0].magnet_active and barbie_ref[0].alive: # Se o magnet estiver ativo, item puxado
             alvo = pygame.math.Vector2(barbie_ref[0].pos)
             direcao = alvo - self.pos
             if direcao.length() < 250 and direcao.length() > 0:
@@ -233,8 +233,8 @@ class Item(pygame.sprite.Sprite):
 
 barbie_ref = [None]
 
-class FashionDisaster(pygame.sprite.Sprite):
-    def __init__(self, posicao):
+class FashionDisaster(pygame.sprite.Sprite): # Classe que representa as nuvens (desastres), elas perseguem a Barbie
+    def __init__(self, posicao): # Coloca o desastre na posição inicial e define velocidade
         super().__init__()
         self.pos = pygame.math.Vector2(posicao)
         self.radius = DISASTER_RADIUS
@@ -242,9 +242,9 @@ class FashionDisaster(pygame.sprite.Sprite):
         self.fase = random.uniform(0, 2 * math.pi)
         self.image = DISASTER_IMAGE
         self.rect = self.image.get_rect(center=self.pos)
-    def desenhar(self, surface):
+    def desenhar(self, surface): #Desenha o desastre na tela
         surface.blit(self.image, self.image.get_rect(center=(int(self.pos.x), int(self.pos.y))))
-    def perseguir(self, alvo_pos):
+    def perseguir(self, alvo_pos): #Move o desastre para a Barbie
         direcao = pygame.math.Vector2(alvo_pos) - self.pos
         if direcao.length() > 0:
             direcao = direcao.normalize()
@@ -253,11 +253,11 @@ class FashionDisaster(pygame.sprite.Sprite):
         self.pos.y += math.sin(self.fase) * 0.3
         self.rect.center = (int(self.pos.x), int(self.pos.y))
 
-    def update(self):
+    def update(self): # Atualiza a posição da nuvem que persegue a Barbie se estiver viva
         if barbie_ref[0] is not None and barbie_ref[0].alive:
             self.perseguir(barbie_ref[0].pos)
 
-def spawn_disasters(grupo, quantidade):
+def spawn_disasters(grupo, quantidade): # Gera mais desastres em posições aleatórias (fora da tela)
     for _ in range(quantidade):
         lado = random.choice(['top', 'bottom', 'left', 'right'])
         if lado == 'top':
@@ -272,8 +272,8 @@ def spawn_disasters(grupo, quantidade):
 
 TIPOS_POWERUP = ['health', 'immunity', 'speed', 'magnet', 'extra_life', 'sparkle']
 
-class PowerUp(pygame.sprite.Sprite):
-    def __init__(self):
+class PowerUp(pygame.sprite.Sprite): #Classe que representa os powerups, poderes da Barbie
+    def __init__(self): # Inicializa o powerup aleatório, com tipo, posição e fase para animação
         super().__init__()
         self.tipo = random.choice(TIPOS_POWERUP)
         self.radius = POWERUP_RADIUS
@@ -287,7 +287,7 @@ class PowerUp(pygame.sprite.Sprite):
         self.image = POWERUP_IMAGES[self.tipo]
         self.rect = self.image.get_rect(center=self.pos)
 
-    def desenhar(self, surface):
+    def desenhar(self, surface): #Desenha o powerup na tela com pulsação usando o a função seno  para efeito de crescimento e decrescimento suave
     
         x, y = int(self.pos.x), int(self.pos.y)
 
@@ -309,11 +309,11 @@ class PowerUp(pygame.sprite.Sprite):
   
         pygame.draw.circle(surface, WHITE, (x, y), int(self.radius + 4 * escala), 2)
 
-    def update(self):
+    def update(self): # Desaparecimento do powerup se a Barbie nao o pegar em 10 segundos
         if pygame.time.get_ticks() - self.criado_em > self.duracao_na_tela:
             self.kill()
 
-def desenhar_hud(surface, barbie, score, wave):
+def desenhar_hud(surface, barbie, score, wave): # Desenha a barra de vida, pontuação, onda atual e vidas extras na tela
     barra_x, barra_y, barra_w, barra_h = 20, 20, 300, 24
     pygame.draw.rect(surface, DARK_PINK, (barra_x - 3, barra_y - 3, barra_w + 6, barra_h + 6), border_radius=8)
     pygame.draw.rect(surface, WHITE, (barra_x, barra_y, barra_w, barra_h), border_radius=6)
@@ -322,14 +322,14 @@ def desenhar_hud(surface, barbie, score, wave):
     txt = font_small.render(f"Vida: {int(barbie.current_health)}/{barbie.max_health}", True, BLACK)
     surface.blit(txt, (barra_x + 8, barra_y + 1))
 
-    score_text = font_med.render(f"💎 {score}", True, DARK_PINK)
+    score_text = font_med.render(f" {score}", True, DARK_PINK) # Score no canto superior direito
     surface.blit(score_text, (WIDTH - score_text.get_width() - 30, 20))
 
     wave_text = font_small.render(f"Onda {wave}", True, DARK_PINK)
     surface.blit(wave_text, (WIDTH - wave_text.get_width() - 30, 65))
 
     icone_vida = pygame.transform.scale(POWERUP_IMAGES['health'], (28, 28))
-    for i in range(barbie.extra_lives):
+    for i in range(barbie.extra_lives): # Desenha os ícones de vidas extras
         surface.blit(icone_vida, (20 + i * 35, HEIGHT - 45))
 
 
@@ -341,7 +341,7 @@ GET_PLAYER_NAME = 3
 SHOW_RANKING = 4
 RANKING_FILE = 'ranking.json'
 
-def carregar_ranking():
+def carregar_ranking(): #Carrega o ranking do arquivo JSON e retorna lista de dicionários com o nome sendo chave e a pontuação o valor
     if not os.path.exists(RANKING_FILE):
         return []
     try:
@@ -357,7 +357,7 @@ def salvar_ranking(ranking):
     except OSError:
         pass  
 
-def adicionar_ao_ranking(nome, score):
+def adicionar_ao_ranking(nome, score):# Adiciona a pontuação ao ranking, mantém os 10 melhores e os ordena
     ranking = carregar_ranking()
     ranking.append({'nome': nome, 'score': score})
     ranking.sort(key=lambda r: r['score'], reverse=True)
@@ -367,7 +367,7 @@ def adicionar_ao_ranking(nome, score):
 
 
 
-def tela_inicio():
+def tela_inicio(): # Exibe a tela inicial com os botões de jogar, ranking e sair e usa os clicks desses botões
     # Cria os rects (área retangular) de cada botão centralizados horizontalmente
 
     btn_jogar_rect   = BTN_JOGAR_IMG.get_rect(center=(WIDTH // 2, 450))
@@ -406,10 +406,10 @@ def tela_inicio():
         clock.tick(FPS)
 
     
-def tela_nome():
+def tela_nome(): # Tela para o jogador digitar seu nome
     nome = ""
-    input_rect = pygame.Rect(WIDTH // 2 - 200, HEIGHT // 2, 400, 60)
-    btn_ok_rect = BTN_COMECAR_IMG.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 120))
+    input_rect = pygame.Rect(WIDTH // 2 - 200, HEIGHT // 2, 400, 60) # Retângulo para o texto, pede o texto
+    btn_ok_rect = BTN_COMECAR_IMG.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 120)) # Botão de começar
 
     while True:
         desenhar_cenario(window)
@@ -447,7 +447,7 @@ def tela_nome():
 
 
 
-def tela_ranking():
+def tela_ranking(): # Exibe o ranking já salvo
     btn_back_rect = BTN_VOLTAR_IMG.get_rect(center=(WIDTH // 2, HEIGHT - 60))
 
     while True:
@@ -465,7 +465,7 @@ def tela_ranking():
 
         window.blit(BTN_VOLTAR_IMG, btn_back_rect)
 
-        for event in pygame.event.get():
+        for event in pygame.event.get(): # Trata os eventos, clique no botao de voltar ou fechar janela
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
@@ -478,7 +478,7 @@ def tela_ranking():
         clock.tick(FPS)
 
 
-def tela_game_over(score, nome):
+def tela_game_over(score, nome): # Exibe a tela de game over e mostra pontuação
     if nome:
         adicionar_ao_ranking(nome, score)
 
@@ -486,7 +486,7 @@ def tela_game_over(score, nome):
     btn_menu_rect = BTN_MENU_IMG.get_rect(center=(WIDTH // 2 + 130, HEIGHT // 2 + 110))
 
     while True:
-        desenhar_cenario(window)
+        desenhar_cenario(window) 
 
         # Overlay rosa escuro
         overlay = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
@@ -507,7 +507,7 @@ def tela_game_over(score, nome):
         window.blit(BTN_JOGAR_NOVAMENTE_IMG, btn_again_rect)
         window.blit(BTN_MENU_IMG, btn_menu_rect)
 
-        for event in pygame.event.get():
+        for event in pygame.event.get(): # Clique nos botões de jogar ou voltar para menu
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
@@ -523,7 +523,7 @@ def tela_game_over(score, nome):
         clock.tick(FPS)
 
 
-def spawn_itens(grupo, quantidade):
+def spawn_itens(grupo, quantidade): # Gera os itens que caem do céu, a quantidade aumenta a cada onda
     for _ in range(quantidade):
         grupo.add(Item())
 def colisao_circulos(a, b, ra, rb):
@@ -544,8 +544,8 @@ def rodar_partida(nome_jogador):
 
     morte_em = None
 
-    while True:
-        for event in pygame.event.get():
+    while True: # Enquanto o jogo roda
+        for event in pygame.event.get(): 
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
@@ -553,7 +553,7 @@ def rodar_partida(nome_jogador):
                 pygame.mixer.music.stop()
                 return score
 
-        desenhar_cenario(window)
+        desenhar_cenario(window) # Desenha o cenário do fundo
 
         agora = pygame.time.get_ticks()
         if (agora - ultimo_powerup_spawn > POWERUP_SPAWN_INTERVAL
@@ -568,13 +568,13 @@ def rodar_partida(nome_jogador):
                 score += SCORE_POR_TIPO[item.tipo]
                 item.kill()
 
-        disasters.update()
+        disasters.update() # Atualiza a posição das nuvens e verifica colisão com a Barbie
         for d in disasters:
             d.desenhar(window)
             if barbie.alive and colisao_circulos(d.pos, barbie.pos, d.radius, barbie.radius):
                 barbie.levar_dano()
 
-        powerups.update()
+        powerups.update() # Atualiza os powerups, verifica a colisão com a Barbie e ativa o efeito
         for p in powerups:
             p.desenhar(window)
             if barbie.alive and colisao_circulos(p.pos, barbie.pos, p.radius, barbie.radius):
@@ -592,7 +592,7 @@ def rodar_partida(nome_jogador):
         nome_txt = font_small.render(f"Jogadora: {nome_jogador}", True, DARK_PINK)
         window.blit(nome_txt, (20, HEIGHT - 60))
 
-        if len(itens) == 0 and barbie.alive:
+        if len(itens) == 0 and barbie.alive: # Quando o jogador coleta todos os itens, começa a próxima onda de itens e nuvens
             wave += 1
             spawn_itens(itens, BASE_ITEMS_PER_WAVE + wave * 2)
             spawn_disasters(disasters, BASE_DISASTERS_PER_WAVE + wave)
@@ -609,7 +609,7 @@ def rodar_partida(nome_jogador):
 
 
 
-def main():
+def main(): # Função principal que controla a máquina de estados do jogo, alternando entre telas e rodando a partida
     estado = START_SCREEN
     nome_jogador = ""
     ultimo_score = 0
@@ -629,5 +629,5 @@ def main():
             estado = tela_ranking()
 
 
-if __name__ == '__main__':
+if __name__ == '__main__': # Roda o jogo chamando a função
     main()
