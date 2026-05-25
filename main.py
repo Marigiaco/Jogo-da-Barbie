@@ -11,6 +11,22 @@ window = pygame.display.set_mode((WIDTH, HEIGHT)) # Cria a aba do jogo com largu
 pygame.display.set_caption('Barbie Shopping Rush')
 clock = pygame.time.Clock() # Cria um Clock que controla os quadros por segundo 
 ASSETS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'assets', 'images') # chega nas assets/images,  __file__ é o caminho, join junta com 'assets/images'
+# Caminho até a pasta de sons (mesma lógica do ASSETS_DIR, mas pra sons)
+SOUNDS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'assets', 'sound')
+
+def carregar_som(nome_arquivo, volume=1.0):
+    caminho = os.path.join(SOUNDS_DIR, nome_arquivo)
+    som = pygame.mixer.Sound(caminho)
+    som.set_volume(volume)  # volume vai de 0.0 (mudo) até 1.0 (máximo)
+    return som
+
+# Carrega os efeitos sonoros (volume baixo pra não estourar)
+SOM_DANO = carregar_som('dano.mp3', volume=0.4)
+SOM_GAME_OVER = carregar_som('game_over.mp3', volume=0.6)
+
+# Carrega a música de fundo (usa mixer.music, que é diferente de Sound — feito pra músicas longas)
+pygame.mixer.music.load(os.path.join(SOUNDS_DIR, 'musica_fundo.mp3'))
+pygame.mixer.music.set_volume(0.3)  # volume mais baixo pra não atrapalhar os SFX
 
 def carregar_imagem(nome_arquivo, tamanho=None): 
     caminho = os.path.join(ASSETS_DIR, nome_arquivo) # Monta o caminho completo até o arquivo (ex: /Users/.../assets/images/barbie.png)
@@ -112,6 +128,7 @@ class Barbie(pygame.sprite.Sprite):
     def levar_dano(self, percent=DISASTER_DAMAGE):
         if self.invincible_timer > 0 or not self.alive or self.is_immune:
             return
+        SOM_DANO.play()
         self.current_health -= self.max_health * percent
         self.invincible_timer = INVINCIBLE_FRAMES
         if self.current_health <= 0:
@@ -121,6 +138,7 @@ class Barbie(pygame.sprite.Sprite):
             else:
                 self.current_health = 0
                 self.alive = False
+                SOM_GAME_OVER.play()
     def ativar_powerup(self, tipo):
         agora = pygame.time.get_ticks()
         if tipo == 'health':
@@ -519,7 +537,7 @@ def rodar_partida(nome_jogador):
    
     barbie = Barbie()
     barbie_ref[0] = barbie
-
+    pygame.mixer.music.play(-1)
     itens = pygame.sprite.Group()
     disasters = pygame.sprite.Group()
     powerups = pygame.sprite.Group()
@@ -537,6 +555,7 @@ def rodar_partida(nome_jogador):
                 pygame.quit()
                 exit()
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                pygame.mixer.music.stop()
                 return score
 
         desenhar_cenario(window)
@@ -587,6 +606,7 @@ def rodar_partida(nome_jogador):
             if morte_em is None:
                 morte_em = pygame.time.get_ticks()
             elif pygame.time.get_ticks() - morte_em > 1200:
+                pygame.mixer.music.stop()
                 return score
 
         pygame.display.update()
@@ -598,6 +618,7 @@ def main():
     estado = START_SCREEN
     nome_jogador = ""
     ultimo_score = 0
+    pygame.mixer.music.play(-1)
 
     while True:
         if estado == START_SCREEN:
