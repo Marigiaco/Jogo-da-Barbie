@@ -6,6 +6,7 @@ import os
 from sys import exit
 from indices import *
 # Importa a biblioteca Pygame e outras bibliotecas utilizadas no código
+
 pygame.init() # Inicializa os módulos do pygame, necessário antes do código
 window = pygame.display.set_mode((WIDTH, HEIGHT)) # Cria a aba do jogo com largura e altura definidos em indices.py
 pygame.display.set_caption('Barbie Shopping Rush')
@@ -41,7 +42,7 @@ ITEM_IMAGES = { # Dicionário com as imagens de cada item, todas redimensionadas
     'jewel':    carregar_imagem('jewel.png',    (40, 40)),
     'crown':    carregar_imagem('crown.png',    (40, 40)),
 }
-POWERUP_IMAGES = {
+POWERUP_IMAGES = {  # Dicionário com as imagens de cada item, todas redimensionadas pra 60x60 pixels
     'health':     carregar_imagem('pu_health.png',     (60, 60)),
     'immunity':   carregar_imagem('pu_immunity.png',   (60, 60)),
     'speed':      carregar_imagem('pu_speed.png',      (60, 60)),
@@ -49,7 +50,7 @@ POWERUP_IMAGES = {
     'extra_life': carregar_imagem('pu_extra_life.png', (60, 60)),
     'sparkle':    carregar_imagem('pu_sparkle.png',    (60, 60)),
 }
-
+ # Imagem de fundo que cobre a janela toda, e as imagens dos botões
 TELA_INICIO_IMG = carregar_imagem("tela_inicio.png", (WIDTH, HEIGHT))
 BTN_JOGAR_IMG = carregar_imagem("botao_jogar.png", (220,70))
 BTN_RANKING_IMG = carregar_imagem("botao_ranking.png", (220,70))
@@ -65,14 +66,17 @@ font_med = pygame.font.SysFont('Arial', 36, bold=True)
 font_big = pygame.font.SysFont('Arial', 64, bold=True)
 font_huge = pygame.font.SysFont('Arial', 96, bold=True)
 # Cria as fontes do sistema (Arial em negrito) em tamanhos diferentes pra textos do jogo
-BG_IMAGE = carregar_imagem('background.png', (WIDTH, HEIGHT))
-BARBIE_IMAGE = carregar_imagem('barbie.png', (70, 160))
-DISASTER_IMAGE = carregar_imagem('cloud.png', (80, 60))
+
+BG_IMAGE = carregar_imagem('background.png', (WIDTH, HEIGHT))  # Imagem de fundo minimalista do jogo
+BARBIE_IMAGE = carregar_imagem('barbie.png', (70, 160)) #Imagem da Barbie, redimensionada
+DISASTER_IMAGE = carregar_imagem('cloud.png', (80, 60))  # Imagem das nuvens
+
 def desenhar_cenario(surface):
+    # Cola a imagem de fundo na superfície
     surface.blit(BG_IMAGE, (0, 0))
 
 
-class Barbie(pygame.sprite.Sprite):
+class Barbie(pygame.sprite.Sprite): # Classe que representa a Barbie,  usa Sprite para colisões
     def __init__(self):
         super().__init__()
         self.pos = pygame.math.Vector2(PLAYER_START_X, PLAYER_START_Y)
