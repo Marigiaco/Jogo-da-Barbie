@@ -77,28 +77,28 @@ def desenhar_cenario(surface):
 
 
 class Barbie(pygame.sprite.Sprite): # Classe que representa a Barbie,  usa Sprite para colisões
-    def __init__(self):
+    def __init__(self): 
         super().__init__()
-        self.pos = pygame.math.Vector2(PLAYER_START_X, PLAYER_START_Y)
-        self.speed = PLAYER_SPEED
-        self.original_speed = self.speed
-        self.radius = PLAYER_RADIUS
+        self.pos = pygame.math.Vector2(PLAYER_START_X, PLAYER_START_Y) #Posição inicial da Barbie (indices.py)
+        self.speed = PLAYER_SPEED #Velocidade de movimento da Barbie
+        self.original_speed = self.speed #Velocidade base
+        self.radius = PLAYER_RADIUS #Raio para colisões
 
-        self.max_health = MAX_HEALTH
-        self.current_health = MAX_HEALTH
-        self.invincible_timer = 0
-        self.alive = True
+        self.max_health = MAX_HEALTH #Vida máxima
+        self.current_health = MAX_HEALTH #Vida atual
+        self.invincible_timer = 0 #Se a Barbie ainda está viva
+        self.alive = True #Se a Barbie ainda está viva
         self.extra_lives = 0
         self.max_extra_lives = 2
 
-        self.is_immune = False
-        self.immune_until = 0
-        self.speed_boost_until = 0
-        self.speed_boost_active = False
-        self.magnet_until = 0
-        self.magnet_active = False
+        self.is_immune = False #Se a Barbie está imune (ativado por power_up)
+        self.immune_until = 0 
+        self.speed_boost_until = 0 #até quando o boost de velocidade dura
+        self.speed_boost_active = False #Se o boost de velocidade está ativo
+        self.magnet_until = 0 #até quando o magnet dura
+        self.magnet_active = False #Se o magnet está ativo
 
-        self.image = BARBIE_IMAGE
+        self.image = BARBIE_IMAGE 
         self.rect = self.image.get_rect(center=self.pos)
 
     def desenhar(self, surface):
