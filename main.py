@@ -269,6 +269,7 @@ class PowerUp(pygame.sprite.Sprite):
         self.criado_em = pygame.time.get_ticks()
         self.duracao_na_tela = 10000  # some depois de 10s se ninguém pegar
         self.fase = 0
+        self.image = POWERUP_IMAGES[self.tipo]
         self.rect = self.image.get_rect(center=self.pos)
 
     def desenhar(self, surface):
@@ -352,7 +353,6 @@ def adicionar_ao_ranking(nome, score):
 
 
 def tela_inicio():
-    """Tela inicial. Retorna o próximo estado."""
     btn_play = pygame.Rect(WIDTH // 2 - 130, HEIGHT // 2 - 20, 260, 60)
     btn_rank = pygame.Rect(WIDTH // 2 - 130, HEIGHT // 2 + 60, 260, 60)
     btn_quit = pygame.Rect(WIDTH // 2 - 130, HEIGHT // 2 + 140, 260, 60)
@@ -399,6 +399,7 @@ def tela_inicio():
 
         pygame.display.update()
         clock.tick(FPS)
+
 def tela_nome():
     nome = ""
     input_rect = pygame.Rect(WIDTH // 2 - 200, HEIGHT // 2, 400, 60)
@@ -528,6 +529,7 @@ def tela_game_over(score, nome):
 
         pygame.display.update()
         clock.tick(FPS)
+
 def spawn_itens(grupo, quantidade):
     for _ in range(quantidade):
         grupo.add(Item())
