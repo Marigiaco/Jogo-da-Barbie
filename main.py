@@ -49,6 +49,11 @@ POWERUP_IMAGES = {
     'extra_life': carregar_imagem('pu_extra_life.png', (60, 60)),
     'sparkle':    carregar_imagem('pu_sparkle.png',    (60, 60)),
 }
+
+TELA_INICIO_IMG = carregar_imagem("tela_inicio.png", (WIDTH, HEIGHT))
+BTN_JOGAR_IMG = carregar_imagem("botao_jogar.png", (220,70))
+BTN_RANKING_IMG = carregar_imagem("botao_ranking.png", (220,70))
+BTN_SAIR_IMG = carregar_imagem("botao_sair.png", (220,70))
 font_small = pygame.font.SysFont('Arial', 24, bold=True)
 font_med = pygame.font.SysFont('Arial', 36, bold=True)
 font_big = pygame.font.SysFont('Arial', 64, bold=True)
@@ -353,9 +358,44 @@ def adicionar_ao_ranking(nome, score):
 
 
 def tela_inicio():
-    btn_play = pygame.Rect(WIDTH // 2 - 130, HEIGHT // 2 - 20, 260, 60)
-    btn_rank = pygame.Rect(WIDTH // 2 - 130, HEIGHT // 2 + 60, 260, 60)
-    btn_quit = pygame.Rect(WIDTH // 2 - 130, HEIGHT // 2 + 140, 260, 60)
+    # Cria os rects (área retangular) de cada botão centralizados horizontalmente
+    # Os números do y (450, 540, 630) você ajusta dependendo de onde quer que apareçam
+    btn_jogar_rect   = BTN_JOGAR_IMG.get_rect(center=(WIDTH // 2, 450))
+    btn_ranking_rect = BTN_RANKING_IMG.get_rect(center=(WIDTH // 2, 540))
+    btn_sair_rect    = BTN_SAIR_IMG.get_rect(center=(WIDTH // 2, 630))
+
+    while True:
+        # Pega a posição atual do mouse (pra efeito de hover, opcional)
+        mouse_pos = pygame.mouse.get_pos()
+
+        # Trata os eventos (clique, fechar janela, etc)
+        for event in pygame.event.get():
+            # Fechou a janela no X
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+            # Clicou com o botão esquerdo do mouse
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                # Se o clique caiu DENTRO do rect do botão Jogar...
+                if btn_jogar_rect.collidepoint(event.pos):
+                    return NAME_SCREEN  # ou GAMEPLAY, dependendo da sua máquina de estados
+                if btn_ranking_rect.collidepoint(event.pos):
+                    return RANKING_SCREEN
+                if btn_sair_rect.collidepoint(event.pos):
+                    pygame.quit()
+                    exit()
+
+        # Desenha a imagem de fundo da tela (cobre tudo)
+        window.blit(TELA_INICIO_IMG, (0, 0))
+
+        # Desenha os 3 botões por cima
+        window.blit(BTN_JOGAR_IMG, btn_jogar_rect)
+        window.blit(BTN_RANKING_IMG, btn_ranking_rect)
+        window.blit(BTN_SAIR_IMG, btn_sair_rect)
+
+        # Atualiza a tela e mantém o FPS
+        pygame.display.flip()
+        clock.tick(FPS)
 
     while True:
         desenhar_cenario(window)
