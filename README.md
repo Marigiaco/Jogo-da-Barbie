@@ -54,6 +54,6 @@ Explicação do material gerado por IA: As funções implementam um sistema de r
 
 Além disso a IA sempre foi usada para fazer correções no código.
 
-Todas as imagens utilizadas no jogo são provenientes de IA generativa.
+Algumas imagens utilizadas no jogo são provenientes de IA generativa.
 
 **Endereço Vídeo do Jogo:**
