@@ -448,7 +448,9 @@ def tela_nome():
 
 
 def tela_ranking():
-    btn_back = pygame.Rect(WIDTH // 2 - 100, HEIGHT - 80, 200, 50)
+    # Rect do botão de imagem
+    btn_back_rect = BTN_VOLTAR_IMG.get_rect(center=(WIDTH // 2, HEIGHT - 60))
+
     while True:
         desenhar_cenario(window)
         titulo = font_big.render("Top 10 Fashionistas", True, DARK_PINK)
@@ -461,18 +463,17 @@ def tela_ranking():
             for i, r in enumerate(ranking[:10]):
                 linha = font_med.render(f"{i + 1}. {r['nome']}  -  {r['score']}", True, DARK_PINK)
                 window.blit(linha, (WIDTH // 2 - 200, 150 + i * 40))
-        pygame.draw.rect(window, HOT_PINK, btn_back, border_radius=12)
-        pygame.draw.rect(window, WHITE, btn_back, 3, border_radius=12)
-        bt = font_small.render("VOLTAR", True, WHITE)
-        window.blit(bt, (btn_back.centerx - bt.get_width() // 2,
-                         btn_back.centery - bt.get_height() // 2))
+
+        # >>> Desenha o botão como IMAGEM <
+        window.blit(BTN_VOLTAR_IMG, btn_back_rect)
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 return START_SCREEN
-            if event.type == pygame.MOUSEBUTTONDOWN and btn_back.collidepoint(event.pos):
+            if event.type == pygame.MOUSEBUTTONDOWN and btn_back_rect.collidepoint(event.pos):
                 return START_SCREEN
 
         pygame.display.update()
