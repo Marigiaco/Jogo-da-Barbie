@@ -57,3 +57,5 @@ Além disso a IA sempre foi usada para fazer correções no código.
 Algumas imagens utilizadas no jogo são provenientes de IA generativa.
 
 **Endereço Vídeo do Jogo:**
+https://youtu.be/SlWyDxeqvm0?si=RAWP6Dxl4_PZ260U
+
